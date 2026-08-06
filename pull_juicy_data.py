@@ -169,7 +169,49 @@ def write_blended_row(sheet, date_str, brand_rows):
     return ws
 
 
-# ---- Main ----
+def export_json_for_dashboard(sheet, brand_names, output_path="docs/data.json"):
+    """Reads every row from each brand tab + Blended tab and writes it all into a single
+    JSON file the GitHub Pages dashboard can fetch. Structure:
+    { "Nordik": [{date, netProfitV2, ...}, ...], "Lymphea": [...], "Blended": [...] }
+    """
+    tabs_to_export = brand_names + ["Blended"]
+    output = {}
+
+    for tab_name in tabs_to_export:
+        try:
+            ws = sheet.worksheet(tab_name)
+        except gspread.WorksheetNotFound:
+            print(f"  Tab '{tab_name}' not found, skipping in JSON export.")
+            continue
+
+        all_values = ws.get_all_values()
+        if not all_values or len(all_values) < 2:
+            output[tab_name] = []
+            continue
+
+        header = all_values[0]
+        rows = all_values[1:]
+
+        tab_records = []
+        for row in rows:
+            record = {}
+            for i, col_name in enumerate(header):
+                value = row[i] if i < len(row) else ""
+                # try to convert numeric strings back to numbers for the dashboard
+                if col_name != "Date" and value != "":
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        pass
+                record[col_name] = value
+            tab_records.append(record)
+
+        output[tab_name] = tab_records
+
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w") as f:
+        json.dump(output, f, indent=2)
+    print(f"  Wrote dashboard data to {output_path}")
 
 def main():
     google_creds_json = os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"]
@@ -208,6 +250,9 @@ def main():
         write_blended_row(sheet, date_from, brand_rows)
     else:
         print("  No brand data fetched, skipping Blended row.")
+
+    print("Exporting dashboard JSON...")
+    export_json_for_dashboard(sheet, [b["name"] for b in BRANDS])
 
     print("Done.")
 
