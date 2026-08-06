@@ -29,7 +29,10 @@ BRANDS = [
 
 JUICY_BASE_URL = "https://juicy.easyapps.cloud/api/stats/shop"
 
-# Metrics we pull out of Juicy's response and write as sheet columns
+# Metrics we pull out of Juicy's response and write as sheet columns.
+# Note: grossMarginV2, netMarginV2, and breakEvenRoasV2 are ratios/percentages -
+# summing them across brands would be meaningless, so they're recalculated
+# from the summed dollar totals in the Blended tab instead (see RATIO_METRICS below).
 METRICS = [
     "grossSalesV2",
     "discountsV2",
@@ -47,6 +50,10 @@ METRICS = [
     "ordersFloat",
     "breakEvenRoasV2",
 ]
+
+# Metrics that should NOT be summed across brands in the Blended tab -
+# they're recalculated from other (summed) values instead.
+RATIO_METRICS = {"grossMarginV2", "netMarginV2", "breakEvenRoasV2"}
 
 SHEET_HEADER = ["Date"] + METRICS
 
@@ -105,18 +112,60 @@ def append_row_if_new(worksheet, row):
     print(f"  Wrote row for {row[0]} to '{worksheet.title}'.")
 
 
-def ensure_blended_tab(sheet, brand_names):
-    """Creates a 'Blended' tab with SUM formulas across all brand tabs, if it doesn't exist."""
+def sum_metric(value, total):
+    """Adds value to total, treating blanks/None as 0. Keeps total as None if nothing summed yet."""
+    if value in (None, ""):
+        return total
+    if total is None:
+        return value
+    return total + value
+
+
+def write_blended_row(sheet, date_str, brand_rows):
+    """Computes a blended row for this date and writes it into the 'Blended' tab
+    (creating it if needed). Dollar-value metrics are summed across brands; ratio/
+    percentage metrics (margins, break-even ROAS) are recalculated from the summed
+    dollar totals rather than naively summed, since summing percentages is meaningless."""
     title = "Blended"
     try:
         ws = sheet.worksheet(title)
-        return ws
     except gspread.WorksheetNotFound:
-        pass
+        ws = sheet.add_worksheet(title=title, rows=1000, cols=len(SHEET_HEADER) + 1)
+        ws.append_row(SHEET_HEADER)
 
-    ws = sheet.add_worksheet(title=title, rows=1000, cols=len(SHEET_HEADER) + 1)
-    ws.append_row(SHEET_HEADER)
-    print(f"  Created '{title}' tab. Add SUM/QUERY formulas manually or extend this script to populate it.")
+    # brand_rows is a list of rows, each shaped like [date, metric1, metric2, ...]
+    # sum every metric column across brands EXCEPT the ratio ones (those get recalculated after)
+    totals = {}
+    for metric_key in METRICS:
+        totals[metric_key] = None
+
+    for row in brand_rows:
+        for i, metric_key in enumerate(METRICS):
+            if metric_key in RATIO_METRICS:
+                continue
+            totals[metric_key] = sum_metric(row[i + 1], totals[metric_key])
+
+    # Recalculate the ratio metrics from summed dollar totals
+    gross_sales = totals.get("grossSalesV2") or 0
+    net_revenue = totals.get("netRevenueV2") or 0
+    gross_profit = totals.get("grossProfitV2") or 0
+    net_profit = totals.get("netProfitV2") or 0
+    total_ad_spend = totals.get("totalAdSpend") or 0
+    cogs = totals.get("cogsV2") or 0
+    transaction_fees = totals.get("transactionFees") or 0
+
+    totals["grossMarginV2"] = round((gross_profit / net_revenue) * 100, 2) if net_revenue else ""
+    totals["netMarginV2"] = round((net_profit / net_revenue) * 100, 2) if net_revenue else ""
+    # break-even ROAS = revenue needed to cover COGS + fees, divided by ad spend basis;
+    # approximated here as net revenue / (net revenue - cogs - transaction fees)
+    break_even_denominator = net_revenue - cogs - transaction_fees
+    totals["breakEvenRoasV2"] = round(net_revenue / break_even_denominator, 2) if break_even_denominator else ""
+
+    blended_row = [date_str] + [
+        totals[metric_key] if totals[metric_key] not in (None,) else ""
+        for metric_key in METRICS
+    ]
+    append_row_if_new(ws, blended_row)
     return ws
 
 
@@ -135,6 +184,8 @@ def main():
     date_from, date_to = get_yesterday_range()
     print(f"Pulling Juicy data for {date_from}...")
 
+    brand_rows = []
+
     for brand in BRANDS:
         token = os.environ.get(brand["env_var"])
         if not token:
@@ -151,8 +202,13 @@ def main():
         row = extract_row(data, date_from)
         ws = get_or_create_worksheet(sheet, brand["name"])
         append_row_if_new(ws, row)
+        brand_rows.append(row)
 
-    ensure_blended_tab(sheet, [b["name"] for b in BRANDS])
+    if brand_rows:
+        write_blended_row(sheet, date_from, brand_rows)
+    else:
+        print("  No brand data fetched, skipping Blended row.")
+
     print("Done.")
 
 
