@@ -1,0 +1,26 @@
+{
+  "Nordik": [
+    {"Date": "2026-08-01", "netProfitV2": 453.33, "netRevenueV2": 2184.0, "grossProfitV2": 1070.91, "totalAdSpend": 617.58, "ordersFloat": 11},
+    {"Date": "2026-08-02", "netProfitV2": -103.45, "netRevenueV2": 1314.48, "grossProfitV2": 609.83, "totalAdSpend": 713.28, "ordersFloat": 8},
+    {"Date": "2026-08-03", "netProfitV2": 239.01, "netRevenueV2": 1402.34, "grossProfitV2": 790.39, "totalAdSpend": 551.38, "ordersFloat": 8},
+    {"Date": "2026-08-04", "netProfitV2": 491.75, "netRevenueV2": 2334.08, "grossProfitV2": 1211.05, "totalAdSpend": 719.3, "ordersFloat": 14},
+    {"Date": "2026-08-05", "netProfitV2": -151.38, "netRevenueV2": 1439.5, "grossProfitV2": 729.86, "totalAdSpend": 881.24, "ordersFloat": 9},
+    {"Date": "2026-08-06", "netProfitV2": -196.99, "netRevenueV2": 319.8, "grossProfitV2": 161.91, "totalAdSpend": 358.9, "ordersFloat": 2}
+  ],
+  "Lymphea": [
+    {"Date": "2026-08-01", "netProfitV2": 210.0, "netRevenueV2": 1500.0, "grossProfitV2": 700.0, "totalAdSpend": 400.0, "ordersFloat": 6},
+    {"Date": "2026-08-02", "netProfitV2": 85.5, "netRevenueV2": 980.0, "grossProfitV2": 420.0, "totalAdSpend": 280.0, "ordersFloat": 4},
+    {"Date": "2026-08-03", "netProfitV2": -42.0, "netRevenueV2": 610.0, "grossProfitV2": 250.0, "totalAdSpend": 260.0, "ordersFloat": 3},
+    {"Date": "2026-08-04", "netProfitV2": 320.0, "netRevenueV2": 1950.0, "grossProfitV2": 980.0, "totalAdSpend": 500.0, "ordersFloat": 9},
+    {"Date": "2026-08-05", "netProfitV2": 60.0, "netRevenueV2": 890.0, "grossProfitV2": 400.0, "totalAdSpend": 300.0, "ordersFloat": 5},
+    {"Date": "2026-08-06", "netProfitV2": -30.0, "netRevenueV2": 210.0, "grossProfitV2": 90.0, "totalAdSpend": 95.0, "ordersFloat": 1}
+  ],
+  "Blended": [
+    {"Date": "2026-08-01", "netProfitV2": 663.33, "netRevenueV2": 3684.0, "grossProfitV2": 1770.91, "totalAdSpend": 1017.58, "ordersFloat": 17},
+    {"Date": "2026-08-02", "netProfitV2": -17.95, "netRevenueV2": 2294.48, "grossProfitV2": 1029.83, "totalAdSpend": 993.28, "ordersFloat": 12},
+    {"Date": "2026-08-03", "netProfitV2": 197.01, "netRevenueV2": 2012.34, "grossProfitV2": 1040.39, "totalAdSpend": 811.38, "ordersFloat": 11},
+    {"Date": "2026-08-04", "netProfitV2": 811.75, "netRevenueV2": 4284.08, "grossProfitV2": 2191.05, "totalAdSpend": 1219.3, "ordersFloat": 23},
+    {"Date": "2026-08-05", "netProfitV2": -91.38, "netRevenueV2": 2329.5, "grossProfitV2": 1129.86, "totalAdSpend": 1181.24, "ordersFloat": 14},
+    {"Date": "2026-08-06", "netProfitV2": -226.99, "netRevenueV2": 529.8, "grossProfitV2": 251.91, "totalAdSpend": 453.9, "ordersFloat": 3}
+  ]
+}
