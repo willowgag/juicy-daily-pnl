@@ -1,0 +1,32 @@
+name: Daily Juicy P&L Pull
+
+on:
+  schedule:
+    # Runs at 5:00 AM UTC daily = midnight in Quebec (EDT, summer) / 1:00 AM Quebec (EST, winter)
+    # A single fixed cron can't hit exactly midnight in both DST seasons, so this is the
+    # closest maintenance-free option: never early, up to 1hr late during EST months.
+    - cron: "0 5 * * *"
+  workflow_dispatch: {} # allows manual triggering from the GitHub Actions tab
+
+jobs:
+  pull-and-write:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily pull
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          JUICY_TOKEN_NORDIK: ${{ secrets.JUICY_TOKEN_NORDIK }}
+          JUICY_TOKEN_LYMPHEA: ${{ secrets.JUICY_TOKEN_LYMPHEA }}
+        run: python pull_juicy_data.py
