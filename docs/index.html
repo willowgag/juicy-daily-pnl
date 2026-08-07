@@ -383,12 +383,16 @@ fetch("data.json")
   .then(res => res.json())
   .then(data => {
     allData = data;
-    // Default to the most recent month that has data, in the Blended tab
+    // Default to the most recent month that has data, in the Blended tab.
+    // Find the max date rather than assuming the last array item is most recent -
+    // rows can be appended out of order (e.g. a backfill run after a daily run).
     const blended = allData["Blended"] || [];
     if (blended.length > 0) {
-      const lastDate = new Date(blended[blended.length - 1].Date);
-      currentMonth = lastDate.getMonth();
-      currentYear = lastDate.getFullYear();
+      const dates = blended.map(r => r.Date).filter(Boolean).sort();
+      const lastDateStr = dates[dates.length - 1];
+      const [y, m] = lastDateStr.split("-").map(Number);
+      currentYear = y;
+      currentMonth = m - 1;
     }
     render();
   })
