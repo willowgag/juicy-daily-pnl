@@ -245,7 +245,7 @@ def send_telegram_message(text):
         return
 
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-    payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
+    payload = {"chat_id": chat_id, "text": text}
 
     try:
         response = requests.post(url, json=payload, timeout=15)
@@ -348,7 +348,7 @@ def main():
         return f"{sign}${abs(n):,.2f}"
 
     message_lines = [
-        f"<b>P&L Update — {yesterday_label}</b>",
+        f"P&L Update — {yesterday_label}",
         f"Yesterday's profit: {fmt(yesterday_profit)}",
     ]
     if month_to_date is not None:
