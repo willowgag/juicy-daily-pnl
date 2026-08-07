@@ -103,13 +103,33 @@ def get_or_create_worksheet(sheet, title):
 
 
 def append_row_if_new(worksheet, row):
-    """Appends the row unless a row for that date already exists (avoids duplicate runs)."""
+    """Appends the row unless a row for that date already exists (avoids duplicate runs).
+    Note: for writing many rows in a loop, prefer append_rows_if_new (batched) instead -
+    calling this repeatedly does one read per call and can hit Google's rate limit."""
     existing_dates = worksheet.col_values(1)  # column A = Date
     if row[0] in existing_dates:
         print(f"  Row for {row[0]} already exists in '{worksheet.title}', skipping.")
         return
     worksheet.append_row(row)
     print(f"  Wrote row for {row[0]} to '{worksheet.title}'.")
+
+
+def append_rows_if_new(worksheet, rows):
+    """Batched version: reads existing dates ONCE, then writes all new rows in a single
+    API call. Use this instead of calling append_row_if_new in a loop - looping the
+    single-row version does one read per row and can exceed Google's per-minute quota."""
+    if not rows:
+        return
+    existing_dates = set(worksheet.col_values(1))  # one read call for the whole batch
+    new_rows = [row for row in rows if row[0] not in existing_dates]
+    skipped = len(rows) - len(new_rows)
+
+    if new_rows:
+        worksheet.append_rows(new_rows)  # one write call for the whole batch
+        for row in new_rows:
+            print(f"  Wrote row for {row[0]} to '{worksheet.title}'.")
+    if skipped:
+        print(f"  Skipped {skipped} row(s) already present in '{worksheet.title}'.")
 
 
 def sum_metric(value, total):
