@@ -141,6 +141,32 @@ def sum_metric(value, total):
     return total + value
 
 
+def compute_blended_totals(brand_rows):
+    """Computes blended totals dict (metric_key -> value) from a list of brand rows for
+    the same date. Shared by write_blended_row (writes to Sheet) and the Telegram
+    notification (just needs the netProfitV2 figure), so the math lives in one place."""
+    totals = {metric_key: None for metric_key in METRICS}
+
+    for row in brand_rows:
+        for i, metric_key in enumerate(METRICS):
+            if metric_key in RATIO_METRICS:
+                continue
+            totals[metric_key] = sum_metric(row[i + 1], totals[metric_key])
+
+    net_revenue = totals.get("netRevenueV2") or 0
+    gross_profit = totals.get("grossProfitV2") or 0
+    net_profit = totals.get("netProfitV2") or 0
+    cogs = totals.get("cogsV2") or 0
+    transaction_fees = totals.get("transactionFees") or 0
+
+    totals["grossMarginV2"] = round((gross_profit / net_revenue) * 100, 2) if net_revenue else ""
+    totals["netMarginV2"] = round((net_profit / net_revenue) * 100, 2) if net_revenue else ""
+    break_even_denominator = net_revenue - cogs - transaction_fees
+    totals["breakEvenRoasV2"] = round(net_revenue / break_even_denominator, 2) if break_even_denominator else ""
+
+    return totals
+
+
 def write_blended_row(sheet, date_str, brand_rows):
     """Computes a blended row for this date and writes it into the 'Blended' tab
     (creating it if needed). Dollar-value metrics are summed across brands; ratio/
@@ -153,33 +179,7 @@ def write_blended_row(sheet, date_str, brand_rows):
         ws = sheet.add_worksheet(title=title, rows=1000, cols=len(SHEET_HEADER) + 1)
         ws.append_row(SHEET_HEADER)
 
-    # brand_rows is a list of rows, each shaped like [date, metric1, metric2, ...]
-    # sum every metric column across brands EXCEPT the ratio ones (those get recalculated after)
-    totals = {}
-    for metric_key in METRICS:
-        totals[metric_key] = None
-
-    for row in brand_rows:
-        for i, metric_key in enumerate(METRICS):
-            if metric_key in RATIO_METRICS:
-                continue
-            totals[metric_key] = sum_metric(row[i + 1], totals[metric_key])
-
-    # Recalculate the ratio metrics from summed dollar totals
-    gross_sales = totals.get("grossSalesV2") or 0
-    net_revenue = totals.get("netRevenueV2") or 0
-    gross_profit = totals.get("grossProfitV2") or 0
-    net_profit = totals.get("netProfitV2") or 0
-    total_ad_spend = totals.get("totalAdSpend") or 0
-    cogs = totals.get("cogsV2") or 0
-    transaction_fees = totals.get("transactionFees") or 0
-
-    totals["grossMarginV2"] = round((gross_profit / net_revenue) * 100, 2) if net_revenue else ""
-    totals["netMarginV2"] = round((net_profit / net_revenue) * 100, 2) if net_revenue else ""
-    # break-even ROAS = revenue needed to cover COGS + fees, divided by ad spend basis;
-    # approximated here as net revenue / (net revenue - cogs - transaction fees)
-    break_even_denominator = net_revenue - cogs - transaction_fees
-    totals["breakEvenRoasV2"] = round(net_revenue / break_even_denominator, 2) if break_even_denominator else ""
+    totals = compute_blended_totals(brand_rows)
 
     blended_row = [date_str] + [
         totals[metric_key] if totals[metric_key] not in (None,) else ""
@@ -233,6 +233,65 @@ def export_json_for_dashboard(sheet, brand_names, output_path="docs/data.json"):
         json.dump(output, f, indent=2)
     print(f"  Wrote dashboard data to {output_path}")
 
+def send_telegram_message(text):
+    """Sends a message via Telegram bot. Requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID
+    env vars. Silently skips (with a log line) if either is missing, so this never
+    breaks the main data pipeline if notifications aren't configured."""
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+
+    if not bot_token or not chat_id:
+        print("  Telegram not configured (missing token or chat ID), skipping notification.")
+        return
+
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
+
+    try:
+        response = requests.post(url, json=payload, timeout=15)
+        response.raise_for_status()
+        print("  Telegram notification sent.")
+    except requests.exceptions.RequestException as e:
+        print(f"  ERROR sending Telegram notification: {e}")
+
+
+def get_month_to_date_profit(sheet, date_str):
+    """Sums netProfitV2 from the Blended tab for every date in the same month as date_str,
+    up to and including that date. Used for the 'month so far' notification figure."""
+    month_prefix = date_str[:7]  # "YYYY-MM"
+
+    try:
+        ws = sheet.worksheet("Blended")
+    except gspread.WorksheetNotFound:
+        return None
+
+    all_values = ws.get_all_values()
+    if not all_values or len(all_values) < 2:
+        return None
+
+    header = all_values[0]
+    rows = all_values[1:]
+
+    try:
+        date_col = header.index("Date")
+        profit_col = header.index("netProfitV2")
+    except ValueError:
+        return None
+
+    total = 0.0
+    for row in rows:
+        if len(row) <= max(date_col, profit_col):
+            continue
+        row_date = row[date_col]
+        if row_date.startswith(month_prefix) and row_date <= date_str:
+            try:
+                total += float(row[profit_col])
+            except (ValueError, IndexError):
+                continue
+
+    return total
+
+
 def main():
     google_creds_json = os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"]
     sheet_id = os.environ["GOOGLE_SHEET_ID"]
@@ -273,6 +332,29 @@ def main():
 
     print("Exporting dashboard JSON...")
     export_json_for_dashboard(sheet, [b["name"] for b in BRANDS])
+
+    print("Sending Telegram notification...")
+    if brand_rows:
+        yesterday_profit = compute_blended_totals(brand_rows).get("netProfitV2", 0)
+    else:
+        yesterday_profit = 0
+    month_to_date = get_month_to_date_profit(sheet, date_from)
+
+    yesterday_label = datetime.date.fromisoformat(date_from).strftime("%b %d")
+    month_label = datetime.date.fromisoformat(date_from).strftime("%B")
+
+    def fmt(n):
+        sign = "-" if n < 0 else ""
+        return f"{sign}${abs(n):,.2f}"
+
+    message_lines = [
+        f"<b>P&L Update — {yesterday_label}</b>",
+        f"Yesterday's profit: {fmt(yesterday_profit)}",
+    ]
+    if month_to_date is not None:
+        message_lines.append(f"{month_label} so far: {fmt(month_to_date)}")
+
+    send_telegram_message("\n".join(message_lines))
 
     print("Done.")
 
