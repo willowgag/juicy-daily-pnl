@@ -1,0 +1,37 @@
+name: Backfill Historical Juicy Data (Run Once)
+
+on:
+  workflow_dispatch: {} # manual trigger only, never runs on a schedule
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run backfill
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          JUICY_TOKEN_NORDIK: ${{ secrets.JUICY_TOKEN_NORDIK }}
+          JUICY_TOKEN_LYMPHEA: ${{ secrets.JUICY_TOKEN_LYMPHEA }}
+        run: python backfill_juicy_data.py
+
+      - name: Commit and push dashboard data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json
+          git diff --staged --quiet || git commit -m "Backfill dashboard data"
+          git push
