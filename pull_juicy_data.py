@@ -340,7 +340,6 @@ def main():
         yesterday_profit = 0
     month_to_date = get_month_to_date_profit(sheet, date_from)
 
-    yesterday_label = datetime.date.fromisoformat(date_from).strftime("%b %d")
     month_label = datetime.date.fromisoformat(date_from).strftime("%B")
 
     def fmt(n):
@@ -348,11 +347,10 @@ def main():
         return f"{sign}${abs(n):,.2f}"
 
     message_lines = [
-        f"P&L Update — {yesterday_label}",
-        f"Yesterday's profit: {fmt(yesterday_profit)}",
+        f"Yesterday: {fmt(yesterday_profit)}",
     ]
     if month_to_date is not None:
-        message_lines.append(f"{month_label} so far: {fmt(month_to_date)}")
+        message_lines.append(f"{month_label}: {fmt(month_to_date)}")
 
     send_telegram_message("\n".join(message_lines))
 
