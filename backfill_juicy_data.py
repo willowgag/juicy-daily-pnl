@@ -25,11 +25,12 @@ from google.oauth2.service_account import Credentials
 from pull_juicy_data import (
     BRANDS,
     METRICS,
+    RATIO_METRICS,
     SHEET_HEADER,
     fetch_juicy_stats,
     get_or_create_worksheet,
-    append_row_if_new,
-    write_blended_row,
+    append_rows_if_new,
+    sum_metric,
     export_json_for_dashboard,
 )
 
@@ -77,6 +78,34 @@ def extract_all_rows(data, date_from, date_to):
     return rows_by_date
 
 
+def compute_blended_row(date_str, brand_rows):
+    """Same math as write_blended_row in pull_juicy_data.py, but returns the row
+    instead of writing it immediately - lets the caller batch all rows into one write."""
+    totals = {metric_key: None for metric_key in METRICS}
+
+    for row in brand_rows:
+        for i, metric_key in enumerate(METRICS):
+            if metric_key in RATIO_METRICS:
+                continue
+            totals[metric_key] = sum_metric(row[i + 1], totals[metric_key])
+
+    net_revenue = totals.get("netRevenueV2") or 0
+    gross_profit = totals.get("grossProfitV2") or 0
+    net_profit = totals.get("netProfitV2") or 0
+    cogs = totals.get("cogsV2") or 0
+    transaction_fees = totals.get("transactionFees") or 0
+
+    totals["grossMarginV2"] = round((gross_profit / net_revenue) * 100, 2) if net_revenue else ""
+    totals["netMarginV2"] = round((net_profit / net_revenue) * 100, 2) if net_revenue else ""
+    break_even_denominator = net_revenue - cogs - transaction_fees
+    totals["breakEvenRoasV2"] = round(net_revenue / break_even_denominator, 2) if break_even_denominator else ""
+
+    return [date_str] + [
+        totals[metric_key] if totals[metric_key] not in (None,) else ""
+        for metric_key in METRICS
+    ]
+
+
 def main():
     google_creds_json = os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"]
     sheet_id = os.environ["GOOGLE_SHEET_ID"]
@@ -110,8 +139,8 @@ def main():
         brand_rows_by_date[name] = rows_by_date
 
         ws = get_or_create_worksheet(sheet, name)
-        for date_str, row in rows_by_date.items():
-            append_row_if_new(ws, row)
+        all_rows = list(rows_by_date.values())
+        append_rows_if_new(ws, all_rows)
 
         print(f"  Backfilled {len(rows_by_date)} days for {name}.")
 
@@ -121,6 +150,7 @@ def main():
     for rows_by_date in brand_rows_by_date.values():
         all_dates.update(rows_by_date.keys())
 
+    blended_rows = []
     for date_str in sorted(all_dates):
         rows_for_this_date = [
             brand_rows_by_date[name][date_str]
@@ -128,7 +158,10 @@ def main():
             if date_str in brand_rows_by_date[name]
         ]
         if rows_for_this_date:
-            write_blended_row(sheet, date_str, rows_for_this_date)
+            blended_rows.append(compute_blended_row(date_str, rows_for_this_date))
+
+    blended_ws = get_or_create_worksheet(sheet, "Blended")
+    append_rows_if_new(blended_ws, blended_rows)
 
     print("Exporting dashboard JSON...")
     export_json_for_dashboard(sheet, [b["name"] for b in BRANDS])
