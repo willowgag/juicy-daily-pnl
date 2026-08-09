@@ -683,6 +683,24 @@
       "netMarginV2": 5.97,
       "ordersFloat": 8.0,
       "breakEvenRoasV2": 2.0
+    },
+    {
+      "Date": "2026-08-08",
+      "grossSalesV2": 3237.85,
+      "discountsV2": 829.0,
+      "totalSalesV2": 2444.83,
+      "netRevenueV2": 2444.83,
+      "cogsV2": 1135.98,
+      "transactionFees": 67.98,
+      "grossProfitV2": 1240.87,
+      "totalAdSpend": 657.12,
+      "facebookAdSpend": 657.12,
+      "googleAdSpend": 0.0,
+      "netProfitV2": 583.75,
+      "grossMarginV2": 50.75,
+      "netMarginV2": 23.87,
+      "ordersFloat": 15.0,
+      "breakEvenRoasV2": 1.97
     }
   ],
   "Lymphea": [
@@ -937,6 +955,24 @@
       "netMarginV2": -92.52,
       "ordersFloat": 3.0,
       "breakEvenRoasV2": 1.43
+    },
+    {
+      "Date": "2026-08-08",
+      "grossSalesV2": 219.95,
+      "discountsV2": 121.98,
+      "totalSalesV2": 97.97,
+      "netRevenueV2": 97.97,
+      "cogsV2": 27.21,
+      "transactionFees": 1.85,
+      "grossProfitV2": 68.91,
+      "totalAdSpend": 212.84,
+      "facebookAdSpend": 212.84,
+      "googleAdSpend": 0.0,
+      "netProfitV2": -143.93,
+      "grossMarginV2": 70.33,
+      "netMarginV2": -146.91,
+      "ordersFloat": 2.0,
+      "breakEvenRoasV2": 1.42
     }
   ],
   "Blended": [
@@ -1622,6 +1658,24 @@
       "grossMarginV2": 51.53,
       "netMarginV2": -1.99,
       "ordersFloat": 11.0,
+      "breakEvenRoasV2": 1.94
+    },
+    {
+      "Date": "2026-08-08",
+      "grossSalesV2": 3457.8,
+      "discountsV2": 950.98,
+      "totalSalesV2": 2542.8,
+      "netRevenueV2": 2542.8,
+      "cogsV2": 1163.19,
+      "transactionFees": 69.83,
+      "grossProfitV2": 1309.78,
+      "totalAdSpend": 869.96,
+      "facebookAdSpend": 869.96,
+      "googleAdSpend": 0.0,
+      "netProfitV2": 439.82,
+      "grossMarginV2": 51.51,
+      "netMarginV2": 17.3,
+      "ordersFloat": 17.0,
       "breakEvenRoasV2": 1.94
     }
   ]
