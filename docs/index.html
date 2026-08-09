@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P/L Gazou</title>
+<title>P&L Calendar</title>
 <style>
   :root {
     --font-display: 'DM Mono', 'SF Mono', 'Consolas', monospace;
@@ -395,9 +395,47 @@
   }
 
   @media (max-width: 640px) {
-    .summary-bar, .range-summary { grid-template-columns: repeat(2, 1fr); }
-    .day { min-height: 60px; padding: 6px; }
-    .day-value { font-size: 12px; }
+    body { padding: 12px; }
+    header { gap: 10px; }
+    h1 { font-size: 17px; }
+    .header-right { gap: 6px; flex-wrap: wrap; }
+    .tabs { flex-wrap: wrap; }
+    .tab { padding: 6px 10px; font-size: 12px; }
+    .theme-toggle { width: 30px; height: 30px; font-size: 14px; }
+
+    .summary-bar, .range-summary { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .stat { padding: 10px 12px; }
+    .stat-value { font-size: 17px; }
+
+    .month-nav { gap: 10px; margin-bottom: 10px; }
+    .month-label { font-size: 13px; min-width: 120px; }
+
+    .weekdays div { padding: 6px 2px; font-size: 9px; }
+
+    .day { min-height: 54px; padding: 4px; }
+    .day-num { font-size: 9px; }
+    .day-value { font-size: 11px; }
+    .day-orders { font-size: 8px; }
+
+    .range-panel { padding: 12px; margin-top: 16px; }
+    .range-controls { gap: 6px; }
+    .range-controls label { font-size: 11px; }
+    .range-controls input[type="date"] {
+      padding: 5px 6px;
+      font-size: 12px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .range-controls button { padding: 6px 10px; font-size: 12px; }
+
+    .modal { max-width: 100%; padding: 16px 18px; }
+  }
+
+  @media (max-width: 380px) {
+    .day { min-height: 46px; }
+    .day-value { font-size: 10px; }
+    .day-orders { display: none; }
+  }
   }
 </style>
 </head>
