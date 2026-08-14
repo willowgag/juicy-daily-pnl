@@ -25,6 +25,7 @@ from google.oauth2.service_account import Credentials
 BRANDS = [
     {"name": "Nordik", "env_var": "JUICY_TOKEN_NORDIK"},
     {"name": "Lymphea", "env_var": "JUICY_TOKEN_LYMPHEA"},
+    {"name": "Solea", "env_var": "JUICY_TOKEN_SOLEA"},
 ]
 
 JUICY_BASE_URL = "https://juicy.easyapps.cloud/api/stats/shop"
