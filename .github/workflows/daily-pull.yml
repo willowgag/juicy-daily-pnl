@@ -31,6 +31,7 @@ jobs:
           GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
           JUICY_TOKEN_NORDIK: ${{ secrets.JUICY_TOKEN_NORDIK }}
           JUICY_TOKEN_LYMPHEA: ${{ secrets.JUICY_TOKEN_LYMPHEA }}
+          JUICY_TOKEN_SOLEA: ${{ secrets.JUICY_TOKEN_SOLEA }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python pull_juicy_data.py
@@ -41,4 +42,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/data.json
           git diff --staged --quiet || git commit -m "Update dashboard data $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
           git push
