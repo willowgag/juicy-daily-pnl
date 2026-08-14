@@ -162,7 +162,17 @@ def main():
             blended_rows.append(compute_blended_row(date_str, rows_for_this_date))
 
     blended_ws = get_or_create_worksheet(sheet, "Blended")
-    append_rows_if_new(blended_ws, blended_rows)
+    # Clear existing rows and rewrite fresh - Blended is fully derived from brand tabs,
+    # so it's always safe to regenerate rather than append-and-skip. This matters when
+    # a new brand is added: old Blended rows (computed without that brand) need to be
+    # replaced, not left in place, or the new brand never gets counted historically.
+    existing_row_count = len(blended_ws.get_all_values())
+    if existing_row_count > 1:
+        blended_ws.batch_clear([f"A2:Z{existing_row_count}"])
+        print(f"  Cleared {existing_row_count - 1} existing Blended row(s) for a clean rebuild.")
+    if blended_rows:
+        blended_ws.append_rows(blended_rows)
+        print(f"  Wrote {len(blended_rows)} Blended row(s).")
 
     print("Exporting dashboard JSON...")
     export_json_for_dashboard(sheet, [b["name"] for b in BRANDS])
