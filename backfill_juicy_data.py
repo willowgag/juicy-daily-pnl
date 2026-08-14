@@ -39,6 +39,7 @@ from pull_juicy_data import (
 BACKFILL_START_DATES = {
     "Nordik": "2026-07-01",
     "Lymphea": "2026-07-25",
+    "Solea": "2026-07-01",
 }
 
 
