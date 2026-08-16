@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P&L Calendar</title>
+<title>P&L Dashboard</title>
 <style>
   :root {
     --font-display: 'DM Mono', 'SF Mono', 'Consolas', monospace;
@@ -27,21 +27,21 @@
     --modal-overlay: rgba(0,0,0,0.6);
   }
 
-  /* Light theme — cyan accent */
+  /* Light theme — beige / black text / orange accent */
   html[data-theme="light"] {
-    --bg: #f5f7f9;
-    --panel: #ffffff;
-    --panel-border: #e2e6ea;
-    --text: #1a1d21;
-    --text-dim: #6b7280;
-    --green-bg: #e7f9ef;
-    --green-text: #16a34a;
-    --red-bg: #fdecec;
-    --red-text: #dc2626;
-    --neutral-bg: #f1f3f5;
-    --accent: #06b6d4;
+    --bg: #f2ebe0;
+    --panel: #faf6ee;
+    --panel-border: #e0d5c0;
+    --text: #1c1a17;
+    --text-dim: #7a7266;
+    --green-bg: #e8f2e2;
+    --green-text: #3f7d2c;
+    --red-bg: #f7e6df;
+    --red-text: #b8452c;
+    --neutral-bg: #ece3d4;
+    --accent: #e2711d;
     --accent-text: #fff;
-    --modal-overlay: rgba(0,0,0,0.35);
+    --modal-overlay: rgba(28,26,23,0.35);
   }
 
   * { box-sizing: border-box; }
@@ -67,7 +67,7 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   .header-left {
@@ -103,10 +103,48 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
 
   .theme-toggle:hover { border-color: var(--accent); }
 
+  /* Top-level view switcher (Calendar / EBITDA / Annual) */
+  .view-switcher {
+    display: flex;
+    gap: 4px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 14px;
+    width: fit-content;
+  }
+
+  .view-tab {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text-dim);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+
+  .view-tab:hover { color: var(--text); }
+
+  .view-tab.active {
+    background: var(--accent);
+    color: var(--accent-text);
+  }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Brand tabs (within a view) */
   .tabs {
     display: flex;
     gap: 4px;
@@ -114,6 +152,7 @@
     border: 1px solid var(--panel-border);
     border-radius: 10px;
     padding: 4px;
+    flex-wrap: wrap;
   }
 
   .tab {
@@ -127,6 +166,7 @@
     border: none;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
   }
 
   .tab:hover { color: var(--text); }
@@ -148,6 +188,7 @@
     border: 1px solid var(--panel-border);
     border-radius: 10px;
     padding: 14px 16px;
+    min-width: 0;
   }
 
   .stat-label {
@@ -156,12 +197,16 @@
     letter-spacing: 0.06em;
     color: var(--text-dim);
     margin-bottom: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .stat-value {
     font-family: var(--font-display);
     font-size: 22px;
     font-weight: 500;
+    overflow-wrap: break-word;
   }
 
   .stat-value.pos { color: var(--green-text); }
@@ -187,6 +232,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
 
   .month-nav button:hover { background: var(--neutral-bg); }
@@ -235,6 +281,8 @@
     justify-content: space-between;
     cursor: default;
     transition: filter 0.1s;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .day:nth-child(7n) { border-right: none; }
@@ -259,6 +307,9 @@
     font-family: var(--font-display);
     font-size: 14px;
     font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .day.pos .day-value { color: var(--green-text); }
@@ -267,6 +318,9 @@
   .day-orders {
     font-size: 10px;
     color: var(--text-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .range-panel {
@@ -307,6 +361,7 @@
     padding: 6px 10px;
     font-family: var(--font-body);
     font-size: 13px;
+    min-width: 0;
   }
 
   .range-controls button {
@@ -378,14 +433,115 @@
     padding: 8px 0;
     border-bottom: 1px solid var(--panel-border);
     font-size: 13px;
+    gap: 12px;
   }
 
   .modal-row:last-child { border-bottom: none; }
 
   .modal-row-label { color: var(--text-dim); }
-  .modal-row-value { font-family: var(--font-display); font-weight: 600; }
+  .modal-row-value { font-family: var(--font-display); font-weight: 600; text-align: right; }
   .modal-row-value.pos { color: var(--green-text); }
   .modal-row-value.neg { color: var(--red-text); }
+
+  /* EBITDA waterfall */
+  .waterfall {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .waterfall-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  .waterfall-row:last-child { border-bottom: none; }
+
+  .waterfall-label {
+    font-size: 13px;
+    color: var(--text-dim);
+    width: 130px;
+    flex-shrink: 0;
+  }
+
+  .waterfall-bar-track {
+    flex: 1;
+    background: var(--neutral-bg);
+    border-radius: 6px;
+    height: 22px;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .waterfall-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.3s;
+  }
+
+  .waterfall-bar-fill.revenue { background: var(--accent); }
+  .waterfall-bar-fill.deduction { background: var(--red-text); }
+  .waterfall-bar-fill.final { background: var(--green-text); }
+
+  .waterfall-value {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    width: 90px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* Annual summary table */
+  .annual-table-wrap {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    overflow-x: auto;
+  }
+
+  table.annual-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 640px;
+  }
+
+  table.annual-table th,
+  table.annual-table td {
+    padding: 10px 14px;
+    text-align: right;
+    border-bottom: 1px solid var(--panel-border);
+    white-space: nowrap;
+  }
+
+  table.annual-table th:first-child,
+  table.annual-table td:first-child {
+    text-align: left;
+    font-family: var(--font-display);
+  }
+
+  table.annual-table th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  table.annual-table tr:last-child td { border-bottom: none; }
+
+  table.annual-table tr.total-row td {
+    font-weight: 700;
+    border-top: 2px solid var(--panel-border);
+  }
+
+  td.pos { color: var(--green-text); }
+  td.neg { color: var(--red-text); }
 
   footer {
     margin-top: 20px;
@@ -395,47 +551,56 @@
   }
 
   @media (max-width: 640px) {
-    body { padding: 12px; }
-    header { gap: 10px; }
-    h1 { font-size: 17px; }
-    .header-right { gap: 6px; flex-wrap: wrap; }
-    .tabs { flex-wrap: wrap; }
-    .tab { padding: 6px 10px; font-size: 12px; }
+    body { padding: 10px; }
+    header { gap: 8px; margin-bottom: 12px; }
+    h1 { font-size: 16px; }
+    .header-right { gap: 6px; }
+
+    .view-switcher { margin-bottom: 10px; }
+    .view-tab { padding: 7px 11px; font-size: 12px; }
+
+    .tabs { gap: 3px; }
+    .tab { padding: 6px 9px; font-size: 11px; }
     .theme-toggle { width: 30px; height: 30px; font-size: 14px; }
 
-    .summary-bar, .range-summary { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .stat { padding: 10px 12px; }
-    .stat-value { font-size: 17px; }
+    .summary-bar, .range-summary { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .stat { padding: 9px 10px; }
+    .stat-label { font-size: 10px; }
+    .stat-value { font-size: 15px; }
 
-    .month-nav { gap: 10px; margin-bottom: 10px; }
-    .month-label { font-size: 13px; min-width: 120px; }
+    .month-nav { gap: 8px; margin-bottom: 8px; }
+    .month-label { font-size: 12px; min-width: 100px; }
 
-    .weekdays div { padding: 6px 2px; font-size: 9px; }
+    .weekdays div { padding: 5px 1px; font-size: 8px; }
 
-    .day { min-height: 54px; padding: 4px; }
-    .day-num { font-size: 9px; }
-    .day-value { font-size: 11px; }
-    .day-orders { font-size: 8px; }
+    .day { min-height: 48px; padding: 3px; }
+    .day-num { font-size: 8px; }
+    .day-value { font-size: 10px; }
+    .day-orders { font-size: 7px; }
 
-    .range-panel { padding: 12px; margin-top: 16px; }
-    .range-controls { gap: 6px; }
-    .range-controls label { font-size: 11px; }
+    .range-panel { padding: 10px; margin-top: 12px; }
+    .range-controls { gap: 5px; }
+    .range-controls label { font-size: 10px; }
     .range-controls input[type="date"] {
-      padding: 5px 6px;
-      font-size: 12px;
-      flex: 1 1 auto;
-      min-width: 0;
+      padding: 5px 4px;
+      font-size: 11px;
+      flex: 1 1 100px;
     }
-    .range-controls button { padding: 6px 10px; font-size: 12px; }
+    .range-controls button { padding: 6px 9px; font-size: 11px; }
 
-    .modal { max-width: 100%; padding: 16px 18px; }
+    .modal { max-width: 100%; padding: 14px 16px; }
+
+    .waterfall { padding: 12px; }
+    .waterfall-label { width: 84px; font-size: 11px; }
+    .waterfall-value { width: 66px; font-size: 11px; }
   }
 
   @media (max-width: 380px) {
-    .day { min-height: 46px; }
-    .day-value { font-size: 10px; }
+    .day { min-height: 40px; }
+    .day-value { font-size: 9px; }
     .day-orders { display: none; }
-  }
+    .waterfall-label { width: 68px; font-size: 10px; }
+    .waterfall-value { width: 58px; font-size: 10px; }
   }
 </style>
 </head>
@@ -443,39 +608,71 @@
 <div class="wrap">
   <header>
     <div class="header-left">
-      <h1>P&L Calendar</h1>
+      <h1>P&L Dashboard</h1>
     </div>
     <div class="header-right">
-      <div class="tabs" id="tabs"></div>
       <button class="theme-toggle" id="themeToggle" title="Toggle theme">&#9789;</button>
     </div>
   </header>
 
-  <div class="summary-bar" id="summary"></div>
-
-  <div class="month-nav">
-    <button id="prevMonth">&#8249;</button>
-    <div class="month-label" id="monthLabel"></div>
-    <button id="nextMonth">&#8250;</button>
+  <div class="view-switcher" id="viewSwitcher">
+    <button class="view-tab active" data-view="calendar">Calendar</button>
+    <button class="view-tab" data-view="ebitda">EBITDA</button>
+    <button class="view-tab" data-view="annual">Annual</button>
   </div>
 
-  <div class="calendar">
-    <div class="weekdays">
-      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+  <!-- CALENDAR VIEW -->
+  <div class="view active" id="view-calendar">
+    <div class="tabs" id="tabs" style="margin-bottom:16px;"></div>
+
+    <div class="summary-bar" id="summary"></div>
+
+    <div class="month-nav">
+      <button id="prevMonth">&#8249;</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button id="nextMonth">&#8250;</button>
     </div>
-    <div class="grid" id="grid"></div>
+
+    <div class="calendar">
+      <div class="weekdays">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="range-panel">
+      <div class="range-panel-title">Custom Date Range</div>
+      <div class="range-controls">
+        <label for="rangeStart">From</label>
+        <input type="date" id="rangeStart">
+        <label for="rangeEnd">To</label>
+        <input type="date" id="rangeEnd">
+        <button id="rangeApply">Apply</button>
+      </div>
+      <div class="range-summary" id="rangeSummary"></div>
+    </div>
   </div>
 
-  <div class="range-panel">
-    <div class="range-panel-title">Custom Date Range</div>
-    <div class="range-controls">
-      <label for="rangeStart">From</label>
-      <input type="date" id="rangeStart">
-      <label for="rangeEnd">To</label>
-      <input type="date" id="rangeEnd">
-      <button id="rangeApply">Apply</button>
+  <!-- EBITDA VIEW -->
+  <div class="view" id="view-ebitda">
+    <div class="tabs" id="tabsEbitda" style="margin-bottom:16px;"></div>
+
+    <div class="month-nav">
+      <button id="prevMonthEbitda">&#8249;</button>
+      <div class="month-label" id="monthLabelEbitda"></div>
+      <button id="nextMonthEbitda">&#8250;</button>
     </div>
-    <div class="range-summary" id="rangeSummary"></div>
+
+    <div class="waterfall" id="waterfall"></div>
+  </div>
+
+  <!-- ANNUAL VIEW -->
+  <div class="view" id="view-annual">
+    <div class="tabs" id="tabsAnnual" style="margin-bottom:16px;"></div>
+
+    <div class="annual-table-wrap">
+      <table class="annual-table" id="annualTable"></table>
+    </div>
   </div>
 
   <footer>Updated automatically once a day from Juicy P&amp;L data</footer>
@@ -496,7 +693,9 @@ let allData = {};
 let currentTab = "Blended";
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
+let currentView = "calendar";
 
+// ---- Theme ----
 function initTheme() {
   const saved = localStorage.getItem("pnl-theme");
   const theme = saved || "dark";
@@ -516,6 +715,18 @@ document.getElementById("themeToggle").onclick = () => {
   updateThemeToggleIcon(next);
 };
 
+// ---- View switcher ----
+document.querySelectorAll(".view-tab").forEach(btn => {
+  btn.onclick = () => {
+    currentView = btn.dataset.view;
+    document.querySelectorAll(".view-tab").forEach(b => b.classList.toggle("active", b === btn));
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById("view-" + currentView).classList.add("active");
+    render();
+  };
+});
+
+// ---- Formatting ----
 function formatMoney(n) {
   const sign = n < 0 ? "-" : "";
   const abs = Math.abs(n);
@@ -528,8 +739,9 @@ function formatMoneyFull(n) {
   return sign + "$" + Math.abs(n).toFixed(2);
 }
 
-function buildTabs() {
-  const tabsEl = document.getElementById("tabs");
+// ---- Tabs (brand filters) — shared across all three views ----
+function buildTabsInto(elId) {
+  const tabsEl = document.getElementById(elId);
   tabsEl.innerHTML = "";
   const names = Object.keys(allData);
   names.sort((a, b) => (a === "Blended" ? -1 : b === "Blended" ? 1 : 0));
@@ -549,6 +761,7 @@ function getDataByDate() {
   return map;
 }
 
+// ---- Calendar view ----
 function renderSummary(dateMap) {
   const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
   const monthRows = Object.values(dateMap).filter(r => r.Date.startsWith(monthPrefix));
@@ -678,21 +891,150 @@ document.getElementById("nextMonth").onclick = () => {
   render();
 };
 
+// ---- EBITDA waterfall view ----
+document.getElementById("prevMonthEbitda").onclick = () => {
+  currentMonth--;
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  render();
+};
+
+document.getElementById("nextMonthEbitda").onclick = () => {
+  currentMonth++;
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  render();
+};
+
+function renderEbitda(dateMap) {
+  const monthLabel = new Date(currentYear, currentMonth, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  document.getElementById("monthLabelEbitda").textContent = monthLabel;
+
+  const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
+  const rows = Object.values(dateMap).filter(r => r.Date.startsWith(monthPrefix));
+
+  const grossSales = rows.reduce((s, r) => s + (r.grossSalesV2 || 0), 0);
+  const discounts = rows.reduce((s, r) => s + (r.discountsV2 || 0), 0);
+  const cogs = rows.reduce((s, r) => s + (r.cogsV2 || 0), 0);
+  const fees = rows.reduce((s, r) => s + (r.transactionFees || 0), 0);
+  const adSpend = rows.reduce((s, r) => s + (r.totalAdSpend || 0), 0);
+  const netProfit = rows.reduce((s, r) => s + (r.netProfitV2 || 0), 0);
+
+  const steps = [
+    { label: "Gross Sales", value: grossSales, type: "revenue" },
+    { label: "Discounts", value: -discounts, type: "deduction" },
+    { label: "COGS", value: -cogs, type: "deduction" },
+    { label: "Ad Spend", value: -adSpend, type: "deduction" },
+    { label: "Trans. Fees", value: -fees, type: "deduction" },
+    { label: "Net Profit", value: netProfit, type: "final" },
+  ];
+
+  const maxAbs = Math.max(...steps.map(s => Math.abs(s.value)), 1);
+
+  const waterfallEl = document.getElementById("waterfall");
+  if (rows.length === 0) {
+    waterfallEl.innerHTML = `<div style="padding:20px;color:var(--text-dim);font-size:13px;">No data for this month yet.</div>`;
+    return;
+  }
+
+  waterfallEl.innerHTML = steps.map(s => {
+    const pct = Math.min(100, (Math.abs(s.value) / maxAbs) * 100);
+    const barClass = s.type === "final" ? "final" : (s.value < 0 ? "deduction" : "revenue");
+    return `
+      <div class="waterfall-row">
+        <div class="waterfall-label">${s.label}</div>
+        <div class="waterfall-bar-track">
+          <div class="waterfall-bar-fill ${barClass}" style="width:${pct}%"></div>
+        </div>
+        <div class="waterfall-value ${s.value < 0 ? 'neg' : 'pos'}">${formatMoney(s.value)}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+// ---- Annual summary view ----
+function renderAnnual(dateMap) {
+  const rowsByYear = {};
+  Object.values(dateMap).forEach(r => {
+    const year = r.Date.slice(0, 4);
+    if (!rowsByYear[year]) rowsByYear[year] = [];
+    rowsByYear[year].push(r);
+  });
+
+  const years = Object.keys(rowsByYear).sort().reverse();
+  const tableEl = document.getElementById("annualTable");
+
+  if (years.length === 0) {
+    tableEl.innerHTML = `<tr><td style="padding:20px;color:var(--text-dim);">No data yet.</td></tr>`;
+    return;
+  }
+
+  let html = `
+    <thead>
+      <tr>
+        <th>Year</th>
+        <th>Revenue</th>
+        <th>COGS</th>
+        <th>Ad Spend</th>
+        <th>Net Profit</th>
+        <th>Net Margin</th>
+        <th>Orders</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  years.forEach(year => {
+    const rows = rowsByYear[year];
+    const revenue = rows.reduce((s, r) => s + (r.netRevenueV2 || 0), 0);
+    const cogs = rows.reduce((s, r) => s + (r.cogsV2 || 0), 0);
+    const adSpend = rows.reduce((s, r) => s + (r.totalAdSpend || 0), 0);
+    const netProfit = rows.reduce((s, r) => s + (r.netProfitV2 || 0), 0);
+    const orders = rows.reduce((s, r) => s + (r.ordersFloat || 0), 0);
+    const margin = revenue ? (netProfit / revenue) * 100 : 0;
+
+    html += `
+      <tr>
+        <td>${year}</td>
+        <td>${formatMoneyFull(revenue)}</td>
+        <td>${formatMoneyFull(cogs)}</td>
+        <td>${formatMoneyFull(adSpend)}</td>
+        <td class="${netProfit >= 0 ? 'pos' : 'neg'}">${formatMoneyFull(netProfit)}</td>
+        <td class="${margin >= 0 ? 'pos' : 'neg'}">${margin.toFixed(1)}%</td>
+        <td>${orders}</td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody>";
+  tableEl.innerHTML = html;
+}
+
+// ---- Main render ----
 function render() {
-  buildTabs();
+  buildTabsInto("tabs");
+  buildTabsInto("tabsEbitda");
+  buildTabsInto("tabsAnnual");
+
   const dateMap = getDataByDate();
-  renderSummary(dateMap);
-  renderCalendar(dateMap);
-  const start = document.getElementById("rangeStart").value;
-  const end = document.getElementById("rangeEnd").value;
-  if (start && end) {
-    const rows = Object.values(dateMap).filter(r => r.Date >= start && r.Date <= end);
-    renderStatsInto("rangeSummary", rows, "Net Profit (Range)");
-  } else {
-    document.getElementById("rangeSummary").innerHTML = "";
+
+  if (currentView === "calendar") {
+    renderSummary(dateMap);
+    renderCalendar(dateMap);
+    const start = document.getElementById("rangeStart").value;
+    const end = document.getElementById("rangeEnd").value;
+    if (start && end) {
+      const rows = Object.values(dateMap).filter(r => r.Date >= start && r.Date <= end);
+      renderStatsInto("rangeSummary", rows, "Net Profit (Range)");
+    } else {
+      document.getElementById("rangeSummary").innerHTML = "";
+    }
+  } else if (currentView === "ebitda") {
+    renderEbitda(dateMap);
+  } else if (currentView === "annual") {
+    renderAnnual(dateMap);
   }
 }
 
+// ---- Load data ----
 initTheme();
 
 fetch("data.json")
