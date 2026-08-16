@@ -809,6 +809,24 @@
       "netMarginV2": 8.35,
       "ordersFloat": 10.0,
       "breakEvenRoasV2": 1.94
+    },
+    {
+      "Date": "2026-08-15",
+      "grossSalesV2": 2368.45,
+      "discountsV2": 579.25,
+      "totalSalesV2": 1789.2,
+      "netRevenueV2": 1789.2,
+      "cogsV2": 793.47,
+      "transactionFees": 49.53,
+      "grossProfitV2": 946.2,
+      "totalAdSpend": 644.09,
+      "facebookAdSpend": 644.09,
+      "googleAdSpend": 0.0,
+      "netProfitV2": 302.11,
+      "grossMarginV2": 52.88,
+      "netMarginV2": 16.88,
+      "ordersFloat": 9.0,
+      "breakEvenRoasV2": 1.89
     }
   ],
   "Lymphea": [
@@ -1188,6 +1206,24 @@
       "grossMarginV2": 67.39,
       "netMarginV2": -99.89,
       "ordersFloat": 3.0,
+      "breakEvenRoasV2": 1.48
+    },
+    {
+      "Date": "2026-08-15",
+      "grossSalesV2": 199.96,
+      "discountsV2": 119.98,
+      "totalSalesV2": 79.98,
+      "netRevenueV2": 79.98,
+      "cogsV2": 23.4,
+      "transactionFees": 2.68,
+      "grossProfitV2": 53.9,
+      "totalAdSpend": 210.9,
+      "facebookAdSpend": 210.9,
+      "googleAdSpend": 0.0,
+      "netProfitV2": -157.0,
+      "grossMarginV2": 67.39,
+      "netMarginV2": -196.29,
+      "ordersFloat": 2.0,
       "breakEvenRoasV2": 1.48
     }
   ],
@@ -2001,6 +2037,24 @@
       "netMarginV2": 43.43,
       "ordersFloat": 3.0,
       "breakEvenRoasV2": 1.44
+    },
+    {
+      "Date": "2026-08-15",
+      "grossSalesV2": 49.95,
+      "discountsV2": 0.0,
+      "totalSalesV2": 49.95,
+      "netRevenueV2": 49.95,
+      "cogsV2": 11.66,
+      "transactionFees": 1.6,
+      "grossProfitV2": 36.69,
+      "totalAdSpend": 36.94,
+      "facebookAdSpend": 36.94,
+      "googleAdSpend": 0.0,
+      "netProfitV2": -0.25,
+      "grossMarginV2": 73.45,
+      "netMarginV2": -0.5,
+      "ordersFloat": 1.0,
+      "breakEvenRoasV2": 1.36
     }
   ],
   "Blended": [
@@ -2813,6 +2867,24 @@
       "netMarginV2": 5.08,
       "ordersFloat": 16.0,
       "breakEvenRoasV2": 1.86
+    },
+    {
+      "Date": "2026-08-15",
+      "grossSalesV2": 2618.36,
+      "discountsV2": 699.23,
+      "totalSalesV2": 1919.13,
+      "netRevenueV2": 1919.13,
+      "cogsV2": 828.53,
+      "transactionFees": 53.81,
+      "grossProfitV2": 1036.79,
+      "totalAdSpend": 891.93,
+      "facebookAdSpend": 891.93,
+      "googleAdSpend": 0.0,
+      "netProfitV2": 144.86,
+      "grossMarginV2": 54.02,
+      "netMarginV2": 7.55,
+      "ordersFloat": 12.0,
+      "breakEvenRoasV2": 1.85
     }
   ]
 }
