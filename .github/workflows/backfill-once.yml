@@ -27,6 +27,7 @@ jobs:
           JUICY_TOKEN_NORDIK: ${{ secrets.JUICY_TOKEN_NORDIK }}
           JUICY_TOKEN_LYMPHEA: ${{ secrets.JUICY_TOKEN_LYMPHEA }}
           JUICY_TOKEN_SOLEA: ${{ secrets.JUICY_TOKEN_SOLEA }}
+          JUICY_TOKEN_FLOREVITALE: ${{ secrets.JUICY_TOKEN_FLOREVITALE }}
         run: python backfill_juicy_data.py
 
       - name: Commit and push dashboard data
