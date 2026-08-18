@@ -1,0 +1,47 @@
+name: Daily Payouts Pull
+
+on:
+  schedule:
+    # Same schedule as the Juicy pull: 5:00 AM UTC = midnight Quebec (EDT) / 1am (EST)
+    - cron: "0 5 * * *"
+  workflow_dispatch: {} # allows manual triggering from the GitHub Actions tab
+
+jobs:
+  pull-and-write:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run payouts pull
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          SHOPIFY_TOKEN_LYMPHEA: ${{ secrets.SHOPIFY_TOKEN_LYMPHEA }}
+          SHOPIFY_DOMAIN_LYMPHEA: ${{ secrets.SHOPIFY_DOMAIN_LYMPHEA }}
+          SHOPIFY_TOKEN_SOLEA: ${{ secrets.SHOPIFY_TOKEN_SOLEA }}
+          SHOPIFY_DOMAIN_SOLEA: ${{ secrets.SHOPIFY_DOMAIN_SOLEA }}
+          SHOPIFY_TOKEN_FLOREVITALE: ${{ secrets.SHOPIFY_TOKEN_FLOREVITALE }}
+          SHOPIFY_DOMAIN_FLOREVITALE: ${{ secrets.SHOPIFY_DOMAIN_FLOREVITALE }}
+          SHOPIFY_TOKEN_NORDIK: ${{ secrets.SHOPIFY_TOKEN_NORDIK }}
+          SHOPIFY_DOMAIN_NORDIK: ${{ secrets.SHOPIFY_DOMAIN_NORDIK }}
+        run: python pull_payouts_data.py
+
+      - name: Commit and push dashboard data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json
+          git diff --staged --quiet || git commit -m "Update payouts data $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
+          git push
