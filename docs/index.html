@@ -10,11 +10,11 @@
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
-  /* Dark theme (default) — purple accent */
   html[data-theme="dark"] {
     --bg: #0b0d10;
     --panel: #14171b;
-    --panel-border: #23272d;
+    --panel-raised: #1a1e23;
+    --panel-border: #262b32;
     --text: #e8eaed;
     --text-dim: #8b929c;
     --green-bg: #10221a;
@@ -25,23 +25,25 @@
     --accent: #9b6bff;
     --accent-text: #fff;
     --modal-overlay: rgba(0,0,0,0.6);
+    --nav-bg: #0e1013;
   }
 
-  /* Light theme — beige / black text / orange accent */
   html[data-theme="light"] {
-    --bg: #f2ebe0;
-    --panel: #faf6ee;
-    --panel-border: #e0d5c0;
-    --text: #1c1a17;
-    --text-dim: #7a7266;
-    --green-bg: #e8f2e2;
-    --green-text: #3f7d2c;
-    --red-bg: #f7e6df;
-    --red-text: #b8452c;
-    --neutral-bg: #ece3d4;
-    --accent: #e2711d;
+    --bg: #ece2d0;
+    --panel: #fffcf6;
+    --panel-raised: #ffffff;
+    --panel-border: #d8c9ab;
+    --text: #2a2318;
+    --text-dim: #6b5f4a;
+    --green-bg: #dcecd2;
+    --green-text: #2f6b1f;
+    --red-bg: #f4dcd0;
+    --red-text: #a03a1f;
+    --neutral-bg: #e3d6ba;
+    --accent: #c85a12;
     --accent-text: #fff;
-    --modal-overlay: rgba(28,26,23,0.35);
+    --modal-overlay: rgba(30,24,12,0.4);
+    --nav-bg: #f7f0e2;
   }
 
   * { box-sizing: border-box; }
@@ -51,7 +53,7 @@
     background: var(--bg);
     color: var(--text);
     font-family: var(--font-body);
-    padding: 24px;
+    padding: 20px;
     min-height: 100vh;
     transition: background 0.2s, color 0.2s;
   }
@@ -59,7 +61,10 @@
   .wrap {
     max-width: 1100px;
     margin: 0 auto;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   }
+
+  body.nav-open .wrap { transform: translateX(180px); }
 
   header {
     display: flex;
@@ -67,36 +72,64 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
 
-  .header-left {
+  .header-left { display: flex; align-items: center; gap: 12px; }
+
+  .nav-toggle {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    cursor: pointer;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 14px;
+    justify-content: center;
+    gap: 3px;
+    flex-shrink: 0;
   }
+
+  .nav-toggle span {
+    display: block;
+    width: 15px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 1px;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+
+  body.nav-open .nav-toggle span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+  body.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+  body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
 
   h1 {
     font-family: var(--font-display);
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 500;
     letter-spacing: -0.02em;
     margin: 0;
     color: var(--text);
   }
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .current-view-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
 
   .theme-toggle {
     background: var(--panel);
     border: 1px solid var(--panel-border);
     color: var(--text);
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 9px;
     cursor: pointer;
     font-size: 16px;
@@ -108,73 +141,127 @@
 
   .theme-toggle:hover { border-color: var(--accent); }
 
-  /* Top-level view switcher (Calendar / EBITDA / Annual) */
-  .view-switcher {
+  .nav-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 190px;
+    background: var(--nav-bg);
+    border-right: 1px solid var(--panel-border);
+    padding: 24px 14px;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 200;
     display: flex;
+    flex-direction: column;
     gap: 4px;
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 10px;
-    padding: 4px;
-    margin-bottom: 14px;
-    width: fit-content;
   }
 
-  .view-tab {
+  body.nav-open .nav-panel { transform: translateX(0); }
+
+  .nav-panel-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    padding: 0 10px 12px;
+  }
+
+  .nav-item {
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 7px;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 8px;
     background: transparent;
     color: var(--text-dim);
     border: none;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
-    white-space: nowrap;
   }
 
-  .view-tab:hover { color: var(--text); }
+  .nav-item:hover { background: var(--panel-border); color: var(--text); }
 
-  .view-tab.active {
-    background: var(--accent);
-    color: var(--accent-text);
+  .nav-item.active { background: var(--accent); color: var(--accent-text); }
+
+  .nav-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s;
+    z-index: 150;
   }
+
+  body.nav-open .nav-scrim { opacity: 1; pointer-events: auto; }
 
   .view { display: none; }
   .view.active { display: block; }
 
-  /* Brand tabs (within a view) */
-  .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 10px;
-    padding: 4px;
-    flex-wrap: wrap;
+  .brand-picker {
+    position: relative;
+    margin-bottom: 18px;
+    width: fit-content;
   }
 
-  .tab {
+  .brand-picker-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .brand-picker-button:hover { border-color: var(--accent); }
+
+  .brand-picker-caret { font-size: 10px; color: var(--text-dim); transition: transform 0.15s; }
+
+  .brand-picker.open .brand-picker-caret { transform: rotate(180deg); }
+
+  .brand-picker-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: var(--panel-raised);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 6px;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    display: none;
+    z-index: 50;
+  }
+
+  .brand-picker.open .brand-picker-menu { display: block; }
+
+  .brand-picker-item {
+    display: block;
+    width: 100%;
+    text-align: left;
     font-family: var(--font-body);
     font-size: 13px;
     font-weight: 600;
-    padding: 7px 14px;
+    padding: 8px 10px;
     border-radius: 7px;
     background: transparent;
     color: var(--text-dim);
     border: none;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    white-space: nowrap;
   }
 
-  .tab:hover { color: var(--text); }
+  .brand-picker-item:hover { background: var(--neutral-bg); color: var(--text); }
 
-  .tab.active {
-    background: var(--accent);
-    color: var(--accent-text);
-  }
+  .brand-picker-item.active { background: var(--accent); color: var(--accent-text); }
 
   .summary-bar {
     display: grid;
@@ -266,10 +353,7 @@
     color: var(--text-dim);
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-  }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); }
 
   .day {
     min-height: 78px;
@@ -289,19 +373,14 @@
 
   .day.empty { background: transparent; cursor: default; }
   .day.no-data { background: var(--neutral-bg); }
-
   .day.pos { background: var(--green-bg); }
   .day.neg { background: var(--red-bg); }
-
   .day.pos, .day.neg { cursor: pointer; }
   .day.pos:hover, .day.neg:hover { filter: brightness(0.93); }
   html[data-theme="light"] .day.pos:hover,
-  html[data-theme="light"] .day.neg:hover { filter: brightness(0.97); }
+  html[data-theme="light"] .day.neg:hover { filter: brightness(0.96); }
 
-  .day-num {
-    font-size: 11px;
-    color: var(--text-dim);
-  }
+  .day-num { font-size: 11px; color: var(--text-dim); }
 
   .day-value {
     font-family: var(--font-display);
@@ -348,10 +427,7 @@
     margin-bottom: 14px;
   }
 
-  .range-controls label {
-    font-size: 12px;
-    color: var(--text-dim);
-  }
+  .range-controls label { font-size: 12px; color: var(--text-dim); }
 
   .range-controls input[type="date"] {
     background: var(--bg);
@@ -375,11 +451,7 @@
     cursor: pointer;
   }
 
-  .range-summary {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
+  .range-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 
   .modal-overlay {
     position: fixed;
@@ -388,14 +460,14 @@
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 100;
+    z-index: 300;
     padding: 20px;
   }
 
   .modal-overlay.open { display: flex; }
 
   .modal {
-    background: var(--panel);
+    background: var(--panel-raised);
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 20px 22px;
@@ -403,17 +475,8 @@
     width: 100%;
   }
 
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-  }
-
-  .modal-date {
-    font-family: var(--font-display);
-    font-size: 15px;
-  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .modal-date { font-family: var(--font-display); font-size: 15px; }
 
   .modal-close {
     background: none;
@@ -437,71 +500,12 @@
   }
 
   .modal-row:last-child { border-bottom: none; }
-
   .modal-row-label { color: var(--text-dim); }
   .modal-row-value { font-family: var(--font-display); font-weight: 600; text-align: right; }
   .modal-row-value.pos { color: var(--green-text); }
   .modal-row-value.neg { color: var(--red-text); }
 
-  /* EBITDA waterfall */
-  .waterfall {
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 14px;
-    padding: 20px;
-  }
-
-  .waterfall-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--panel-border);
-  }
-
-  .waterfall-row:last-child { border-bottom: none; }
-
-  .waterfall-label {
-    font-size: 13px;
-    color: var(--text-dim);
-    width: 130px;
-    flex-shrink: 0;
-  }
-
-  .waterfall-bar-track {
-    flex: 1;
-    background: var(--neutral-bg);
-    border-radius: 6px;
-    height: 22px;
-    overflow: hidden;
-    min-width: 0;
-  }
-
-  .waterfall-bar-fill {
-    height: 100%;
-    border-radius: 6px;
-    transition: width 0.3s;
-  }
-
-  .waterfall-bar-fill.revenue { background: var(--accent); }
-  .waterfall-bar-fill.deduction { background: var(--red-text); }
-  .waterfall-bar-fill.final { background: var(--green-text); }
-
-  .waterfall-value {
-    font-family: var(--font-display);
-    font-size: 13px;
-    font-weight: 600;
-    width: 90px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  /* EBITDA tiles (Triple Whale style) */
-  .ebitda-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
+  .ebitda-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
   .ebitda-tile {
     background: var(--panel);
@@ -522,12 +526,7 @@
     gap: 6px;
   }
 
-  .ebitda-tile-icon {
-    width: 8px;
-    height: 8px;
-    border-radius: 2px;
-    flex-shrink: 0;
-  }
+  .ebitda-tile-icon { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 
   .ebitda-tile-value {
     font-family: var(--font-display);
@@ -538,12 +537,7 @@
 
   .ebitda-tile-value.pos { color: var(--green-text); }
   .ebitda-tile-value.neg { color: var(--red-text); }
-
-  .ebitda-tile-sub {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 6px;
-  }
+  .ebitda-tile-sub { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
 
   .ebitda-tile.featured {
     grid-column: span 3;
@@ -556,7 +550,6 @@
 
   .ebitda-tile.featured .ebitda-tile-value { font-size: 34px; }
 
-  /* Annual summary table */
   .annual-table-wrap {
     background: var(--panel);
     border: 1px solid var(--panel-border);
@@ -564,12 +557,7 @@
     overflow-x: auto;
   }
 
-  table.annual-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    min-width: 640px;
-  }
+  table.annual-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px; }
 
   table.annual-table th,
   table.annual-table td {
@@ -580,10 +568,7 @@
   }
 
   table.annual-table th:first-child,
-  table.annual-table td:first-child {
-    text-align: left;
-    font-family: var(--font-display);
-  }
+  table.annual-table td:first-child { text-align: left; font-family: var(--font-display); }
 
   table.annual-table th {
     font-size: 11px;
@@ -591,37 +576,29 @@
     letter-spacing: 0.05em;
     color: var(--text-dim);
     font-weight: 600;
+    background: var(--neutral-bg);
   }
 
   table.annual-table tr:last-child td { border-bottom: none; }
 
-  table.annual-table tr.total-row td {
-    font-weight: 700;
-    border-top: 2px solid var(--panel-border);
-  }
-
   td.pos { color: var(--green-text); }
   td.neg { color: var(--red-text); }
 
-  footer {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 11px;
-    color: var(--text-dim);
-  }
+  footer { margin-top: 20px; text-align: center; font-size: 11px; color: var(--text-dim); }
 
   @media (max-width: 640px) {
     body { padding: 10px; }
     header { gap: 8px; margin-bottom: 12px; }
-    h1 { font-size: 16px; }
+    h1 { font-size: 15px; }
+    .current-view-label { font-size: 10px; }
     .header-right { gap: 6px; }
+    .nav-toggle, .theme-toggle { width: 32px; height: 32px; }
 
-    .view-switcher { margin-bottom: 10px; }
-    .view-tab { padding: 7px 11px; font-size: 12px; }
+    body.nav-open .wrap { transform: translateX(150px); }
+    .nav-panel { width: 160px; padding: 20px 10px; }
+    .nav-item { font-size: 13px; padding: 9px 10px; }
 
-    .tabs { gap: 3px; }
-    .tab { padding: 6px 9px; font-size: 11px; }
-    .theme-toggle { width: 30px; height: 30px; font-size: 14px; }
+    .brand-picker-button { padding: 8px 12px; font-size: 13px; }
 
     .summary-bar, .range-summary { grid-template-columns: repeat(2, 1fr); gap: 6px; }
     .stat { padding: 9px 10px; }
@@ -641,18 +618,10 @@
     .range-panel { padding: 10px; margin-top: 12px; }
     .range-controls { gap: 5px; }
     .range-controls label { font-size: 10px; }
-    .range-controls input[type="date"] {
-      padding: 5px 4px;
-      font-size: 11px;
-      flex: 1 1 100px;
-    }
+    .range-controls input[type="date"] { padding: 5px 4px; font-size: 11px; flex: 1 1 100px; }
     .range-controls button { padding: 6px 9px; font-size: 11px; }
 
     .modal { max-width: 100%; padding: 14px 16px; }
-
-    .waterfall { padding: 12px; }
-    .waterfall-label { width: 84px; font-size: 11px; }
-    .waterfall-value { width: 66px; font-size: 11px; }
 
     .ebitda-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .ebitda-tile { padding: 12px 14px; }
@@ -665,32 +634,43 @@
     .day { min-height: 40px; }
     .day-value { font-size: 9px; }
     .day-orders { display: none; }
-    .waterfall-label { width: 68px; font-size: 10px; }
-    .waterfall-value { width: 58px; font-size: 10px; }
   }
 </style>
 </head>
 <body>
+<div class="nav-scrim" id="navScrim"></div>
+<div class="nav-panel" id="navPanel">
+  <div class="nav-panel-title">Views</div>
+  <button class="nav-item active" data-view="calendar">Calendar</button>
+  <button class="nav-item" data-view="ebitda">EBITDA</button>
+  <button class="nav-item" data-view="annual">Annual</button>
+  <button class="nav-item" data-view="payouts">Payouts</button>
+</div>
+
 <div class="wrap">
   <header>
     <div class="header-left">
-      <h1>P&L Dashboard</h1>
+      <button class="nav-toggle" id="navToggle" title="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div>
+        <h1>P&L Dashboard</h1>
+        <div class="current-view-label" id="currentViewLabel">Calendar</div>
+      </div>
     </div>
     <div class="header-right">
       <button class="theme-toggle" id="themeToggle" title="Toggle theme">&#9789;</button>
     </div>
   </header>
 
-  <div class="view-switcher" id="viewSwitcher">
-    <button class="view-tab active" data-view="calendar">Calendar</button>
-    <button class="view-tab" data-view="ebitda">EBITDA</button>
-    <button class="view-tab" data-view="annual">Annual</button>
-    <button class="view-tab" data-view="payouts">Payouts</button>
-  </div>
-
-  <!-- CALENDAR VIEW -->
   <div class="view active" id="view-calendar">
-    <div class="tabs" id="tabs" style="margin-bottom:16px;"></div>
+    <div class="brand-picker" id="brandPicker-calendar">
+      <button class="brand-picker-button" data-menu="calendar">
+        <span data-label>Blended</span>
+        <span class="brand-picker-caret">&#9662;</span>
+      </button>
+      <div class="brand-picker-menu" id="brandMenu-calendar"></div>
+    </div>
 
     <div class="summary-bar" id="summary"></div>
 
@@ -720,9 +700,14 @@
     </div>
   </div>
 
-  <!-- EBITDA VIEW -->
   <div class="view" id="view-ebitda">
-    <div class="tabs" id="tabsEbitda" style="margin-bottom:16px;"></div>
+    <div class="brand-picker" id="brandPicker-ebitda">
+      <button class="brand-picker-button" data-menu="ebitda">
+        <span data-label>Blended</span>
+        <span class="brand-picker-caret">&#9662;</span>
+      </button>
+      <div class="brand-picker-menu" id="brandMenu-ebitda"></div>
+    </div>
 
     <div class="month-nav">
       <button id="prevMonthEbitda">&#8249;</button>
@@ -733,18 +718,28 @@
     <div class="ebitda-grid" id="waterfall"></div>
   </div>
 
-  <!-- ANNUAL VIEW -->
   <div class="view" id="view-annual">
-    <div class="tabs" id="tabsAnnual" style="margin-bottom:16px;"></div>
+    <div class="brand-picker" id="brandPicker-annual">
+      <button class="brand-picker-button" data-menu="annual">
+        <span data-label>Blended</span>
+        <span class="brand-picker-caret">&#9662;</span>
+      </button>
+      <div class="brand-picker-menu" id="brandMenu-annual"></div>
+    </div>
 
     <div class="annual-table-wrap">
       <table class="annual-table" id="annualTable"></table>
     </div>
   </div>
 
-  <!-- PAYOUTS VIEW -->
   <div class="view" id="view-payouts">
-    <div class="tabs" id="tabsPayouts" style="margin-bottom:16px;"></div>
+    <div class="brand-picker" id="brandPicker-payouts">
+      <button class="brand-picker-button" data-menu="payouts">
+        <span data-label>Blended</span>
+        <span class="brand-picker-caret">&#9662;</span>
+      </button>
+      <div class="brand-picker-menu" id="brandMenu-payouts"></div>
+    </div>
 
     <div class="summary-bar" id="payoutsSummary"></div>
 
@@ -770,11 +765,13 @@
 <script>
 let allData = {};
 let currentTab = "Blended";
+let currentPayoutsTab = "Blended";
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 let currentView = "calendar";
 
-// ---- Theme ----
+const VIEW_LABELS = { calendar: "Calendar", ebitda: "EBITDA", annual: "Annual", payouts: "Payouts" };
+
 function initTheme() {
   const saved = localStorage.getItem("pnl-theme");
   const theme = saved || "dark";
@@ -794,18 +791,27 @@ document.getElementById("themeToggle").onclick = () => {
   updateThemeToggleIcon(next);
 };
 
-// ---- View switcher ----
-document.querySelectorAll(".view-tab").forEach(btn => {
+const navToggle = document.getElementById("navToggle");
+const navScrim = document.getElementById("navScrim");
+
+function closeNav() { document.body.classList.remove("nav-open"); }
+function toggleNav() { document.body.classList.toggle("nav-open"); }
+
+navToggle.onclick = toggleNav;
+navScrim.onclick = closeNav;
+
+document.querySelectorAll(".nav-item").forEach(btn => {
   btn.onclick = () => {
     currentView = btn.dataset.view;
-    document.querySelectorAll(".view-tab").forEach(b => b.classList.toggle("active", b === btn));
+    document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b === btn));
     document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
     document.getElementById("view-" + currentView).classList.add("active");
+    document.getElementById("currentViewLabel").textContent = VIEW_LABELS[currentView];
+    closeNav();
     render();
   };
 });
 
-// ---- Formatting ----
 function formatMoney(n) {
   const sign = n < 0 ? "-" : "";
   const abs = Math.abs(n);
@@ -818,20 +824,51 @@ function formatMoneyFull(n) {
   return sign + "$" + Math.abs(n).toFixed(2);
 }
 
-// ---- Tabs (brand filters) — shared across all three views ----
-function buildTabsInto(elId) {
-  const tabsEl = document.getElementById(elId);
-  tabsEl.innerHTML = "";
-  const names = Object.keys(allData);
+function getPnlBrandNames() {
+  const names = Object.keys(allData).filter(k => k !== "Payouts");
   names.sort((a, b) => (a === "Blended" ? -1 : b === "Blended" ? 1 : 0));
-  names.forEach(name => {
-    const btn = document.createElement("button");
-    btn.className = "tab" + (name === currentTab ? " active" : "");
-    btn.textContent = name;
-    btn.onclick = () => { currentTab = name; render(); };
-    tabsEl.appendChild(btn);
-  });
+  return names;
 }
+
+function getPayoutsBrandNames() {
+  const payoutsData = allData["Payouts"] || {};
+  const names = Object.keys(payoutsData);
+  names.sort((a, b) => (a === "Blended" ? -1 : b === "Blended" ? 1 : 0));
+  return names;
+}
+
+function buildBrandPicker(viewKey, names, currentValue, onSelect) {
+  const pickerEl = document.getElementById("brandPicker-" + viewKey);
+  const buttonEl = pickerEl.querySelector(".brand-picker-button");
+  const labelEl = buttonEl.querySelector("[data-label]");
+  const menuEl = document.getElementById("brandMenu-" + viewKey);
+
+  labelEl.textContent = currentValue;
+  menuEl.innerHTML = "";
+
+  names.forEach(name => {
+    const item = document.createElement("button");
+    item.className = "brand-picker-item" + (name === currentValue ? " active" : "");
+    item.textContent = name;
+    item.onclick = () => {
+      onSelect(name);
+      pickerEl.classList.remove("open");
+    };
+    menuEl.appendChild(item);
+  });
+
+  buttonEl.onclick = (e) => {
+    e.stopPropagation();
+    document.querySelectorAll(".brand-picker").forEach(p => {
+      if (p !== pickerEl) p.classList.remove("open");
+    });
+    pickerEl.classList.toggle("open");
+  };
+}
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".brand-picker").forEach(p => p.classList.remove("open"));
+});
 
 function getDataByDate() {
   const rows = allData[currentTab] || [];
@@ -840,7 +877,6 @@ function getDataByDate() {
   return map;
 }
 
-// ---- Calendar view ----
 function renderSummary(dateMap) {
   const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
   const monthRows = Object.values(dateMap).filter(r => r.Date.startsWith(monthPrefix));
@@ -970,7 +1006,6 @@ document.getElementById("nextMonth").onclick = () => {
   render();
 };
 
-// ---- EBITDA waterfall view ----
 document.getElementById("prevMonthEbitda").onclick = () => {
   currentMonth--;
   if (currentMonth < 0) { currentMonth = 11; currentYear--; }
@@ -1028,7 +1063,6 @@ function renderEbitda(dateMap) {
   `).join("");
 }
 
-// ---- Annual summary view ----
 function renderAnnual(dateMap) {
   const rowsByYear = {};
   Object.values(dateMap).forEach(r => {
@@ -1086,24 +1120,6 @@ function renderAnnual(dateMap) {
   tableEl.innerHTML = html;
 }
 
-// ---- Payouts view (different data shape: per-brand snapshot objects, not date series) ----
-let currentPayoutsTab = "Blended";
-
-function buildPayoutsTabsInto(elId) {
-  const tabsEl = document.getElementById(elId);
-  tabsEl.innerHTML = "";
-  const payoutsData = allData["Payouts"] || {};
-  const names = Object.keys(payoutsData);
-  names.sort((a, b) => (a === "Blended" ? -1 : b === "Blended" ? 1 : 0));
-  names.forEach(name => {
-    const btn = document.createElement("button");
-    btn.className = "tab" + (name === currentPayoutsTab ? " active" : "");
-    btn.textContent = name;
-    btn.onclick = () => { currentPayoutsTab = name; render(); };
-    tabsEl.appendChild(btn);
-  });
-}
-
 function renderPayouts() {
   const payoutsData = allData["Payouts"] || {};
   const record = payoutsData[currentPayoutsTab];
@@ -1111,6 +1127,7 @@ function renderPayouts() {
 
   if (!record) {
     el.innerHTML = `<div style="padding:20px;color:var(--text-dim);grid-column:1/-1;">No payout data yet for ${currentPayoutsTab}.</div>`;
+    document.getElementById("payoutsHistoryTable").innerHTML = "";
     return;
   }
 
@@ -1151,7 +1168,7 @@ function renderPayoutsHistory(history) {
     return;
   }
 
-  const sorted = [...history].sort((a, b) => (a.Date < b.Date ? 1 : -1)); // newest first
+  const sorted = [...history].sort((a, b) => (a.Date < b.Date ? 1 : -1));
 
   let html = `
     <thead>
@@ -1184,12 +1201,14 @@ function renderPayoutsHistory(history) {
   tableEl.innerHTML = html;
 }
 
-// ---- Main render ----
 function render() {
-  buildTabsInto("tabs");
-  buildTabsInto("tabsEbitda");
-  buildTabsInto("tabsAnnual");
-  buildPayoutsTabsInto("tabsPayouts");
+  const pnlBrands = getPnlBrandNames();
+  buildBrandPicker("calendar", pnlBrands, currentTab, (name) => { currentTab = name; render(); });
+  buildBrandPicker("ebitda", pnlBrands, currentTab, (name) => { currentTab = name; render(); });
+  buildBrandPicker("annual", pnlBrands, currentTab, (name) => { currentTab = name; render(); });
+
+  const payoutsBrands = getPayoutsBrandNames();
+  buildBrandPicker("payouts", payoutsBrands, currentPayoutsTab, (name) => { currentPayoutsTab = name; render(); });
 
   const dateMap = getDataByDate();
 
@@ -1213,7 +1232,6 @@ function render() {
   }
 }
 
-// ---- Load data ----
 initTheme();
 
 fetch("data.json")
