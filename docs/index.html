@@ -496,6 +496,66 @@
     flex-shrink: 0;
   }
 
+  /* EBITDA tiles (Triple Whale style) */
+  .ebitda-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .ebitda-tile {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    min-width: 0;
+  }
+
+  .ebitda-tile-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ebitda-tile-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .ebitda-tile-value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 600;
+    overflow-wrap: break-word;
+  }
+
+  .ebitda-tile-value.pos { color: var(--green-text); }
+  .ebitda-tile-value.neg { color: var(--red-text); }
+
+  .ebitda-tile-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  .ebitda-tile.featured {
+    grid-column: span 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .ebitda-tile.featured .ebitda-tile-value { font-size: 34px; }
+
   /* Annual summary table */
   .annual-table-wrap {
     background: var(--panel);
@@ -593,6 +653,12 @@
     .waterfall { padding: 12px; }
     .waterfall-label { width: 84px; font-size: 11px; }
     .waterfall-value { width: 66px; font-size: 11px; }
+
+    .ebitda-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .ebitda-tile { padding: 12px 14px; }
+    .ebitda-tile-value { font-size: 19px; }
+    .ebitda-tile.featured { grid-column: span 2; }
+    .ebitda-tile.featured .ebitda-tile-value { font-size: 24px; }
   }
 
   @media (max-width: 380px) {
@@ -619,6 +685,7 @@
     <button class="view-tab active" data-view="calendar">Calendar</button>
     <button class="view-tab" data-view="ebitda">EBITDA</button>
     <button class="view-tab" data-view="annual">Annual</button>
+    <button class="view-tab" data-view="payouts">Payouts</button>
   </div>
 
   <!-- CALENDAR VIEW -->
@@ -663,7 +730,7 @@
       <button id="nextMonthEbitda">&#8250;</button>
     </div>
 
-    <div class="waterfall" id="waterfall"></div>
+    <div class="ebitda-grid" id="waterfall"></div>
   </div>
 
   <!-- ANNUAL VIEW -->
@@ -672,6 +739,18 @@
 
     <div class="annual-table-wrap">
       <table class="annual-table" id="annualTable"></table>
+    </div>
+  </div>
+
+  <!-- PAYOUTS VIEW -->
+  <div class="view" id="view-payouts">
+    <div class="tabs" id="tabsPayouts" style="margin-bottom:16px;"></div>
+
+    <div class="summary-bar" id="payoutsSummary"></div>
+
+    <div class="range-panel-title" style="margin-top:24px;">Payout History</div>
+    <div class="annual-table-wrap" style="margin-top:12px;">
+      <table class="annual-table" id="payoutsHistoryTable"></table>
     </div>
   </div>
 
@@ -911,43 +990,42 @@ function renderEbitda(dateMap) {
   const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
   const rows = Object.values(dateMap).filter(r => r.Date.startsWith(monthPrefix));
 
-  const grossSales = rows.reduce((s, r) => s + (r.grossSalesV2 || 0), 0);
-  const discounts = rows.reduce((s, r) => s + (r.discountsV2 || 0), 0);
-  const cogs = rows.reduce((s, r) => s + (r.cogsV2 || 0), 0);
-  const fees = rows.reduce((s, r) => s + (r.transactionFees || 0), 0);
-  const adSpend = rows.reduce((s, r) => s + (r.totalAdSpend || 0), 0);
-  const netProfit = rows.reduce((s, r) => s + (r.netProfitV2 || 0), 0);
-
-  const steps = [
-    { label: "Gross Sales", value: grossSales, type: "revenue" },
-    { label: "Discounts", value: -discounts, type: "deduction" },
-    { label: "COGS", value: -cogs, type: "deduction" },
-    { label: "Ad Spend", value: -adSpend, type: "deduction" },
-    { label: "Trans. Fees", value: -fees, type: "deduction" },
-    { label: "Net Profit", value: netProfit, type: "final" },
-  ];
-
-  const maxAbs = Math.max(...steps.map(s => Math.abs(s.value)), 1);
-
-  const waterfallEl = document.getElementById("waterfall");
+  const gridEl = document.getElementById("waterfall");
   if (rows.length === 0) {
-    waterfallEl.innerHTML = `<div style="padding:20px;color:var(--text-dim);font-size:13px;">No data for this month yet.</div>`;
+    gridEl.innerHTML = `<div style="padding:20px;color:var(--text-dim);font-size:13px;grid-column:1/-1;">No data for this month yet.</div>`;
     return;
   }
 
-  waterfallEl.innerHTML = steps.map(s => {
-    const pct = Math.min(100, (Math.abs(s.value) / maxAbs) * 100);
-    const barClass = s.type === "final" ? "final" : (s.value < 0 ? "deduction" : "revenue");
-    return `
-      <div class="waterfall-row">
-        <div class="waterfall-label">${s.label}</div>
-        <div class="waterfall-bar-track">
-          <div class="waterfall-bar-fill ${barClass}" style="width:${pct}%"></div>
-        </div>
-        <div class="waterfall-value ${s.value < 0 ? 'neg' : 'pos'}">${formatMoney(s.value)}</div>
+  const revenue = rows.reduce((s, r) => s + (r.netRevenueV2 || 0), 0);
+  const cogs = rows.reduce((s, r) => s + (r.cogsV2 || 0), 0);
+  const adSpend = rows.reduce((s, r) => s + (r.totalAdSpend || 0), 0);
+  const grossProfit = rows.reduce((s, r) => s + (r.grossProfitV2 || 0), 0);
+  const netProfit = rows.reduce((s, r) => s + (r.netProfitV2 || 0), 0);
+  const orders = rows.reduce((s, r) => s + (r.ordersFloat || 0), 0);
+
+  const margin = revenue ? (netProfit / revenue) * 100 : 0;
+  const cogsPct = revenue ? (cogs / revenue) * 100 : 0;
+  const adSpendPct = revenue ? (adSpend / revenue) * 100 : 0;
+  const aov = orders ? revenue / orders : 0;
+
+  const tiles = [
+    { label: "Net Profit", value: formatMoneyFull(netProfit), sub: `${margin.toFixed(1)}% margin`, colorClass: netProfit >= 0 ? "pos" : "neg", dotColor: "var(--green-text)", featured: true },
+    { label: "Revenue", value: formatMoneyFull(revenue), sub: `${orders} orders`, colorClass: "", dotColor: "var(--accent)" },
+    { label: "COGS", value: formatMoneyFull(cogs), sub: `${cogsPct.toFixed(1)}% of revenue`, colorClass: "", dotColor: "var(--red-text)" },
+    { label: "Ad Spend", value: formatMoneyFull(adSpend), sub: `${adSpendPct.toFixed(1)}% of revenue`, colorClass: "", dotColor: "var(--red-text)" },
+    { label: "Gross Profit", value: formatMoneyFull(grossProfit), sub: revenue ? `${((grossProfit / revenue) * 100).toFixed(1)}% margin` : "", colorClass: grossProfit >= 0 ? "pos" : "neg", dotColor: "var(--green-text)" },
+    { label: "AOV", value: formatMoneyFull(aov), sub: "avg order value", colorClass: "", dotColor: "var(--accent)" },
+  ];
+
+  gridEl.innerHTML = tiles.map(t => `
+    <div class="ebitda-tile${t.featured ? ' featured' : ''}">
+      <div>
+        <div class="ebitda-tile-label"><span class="ebitda-tile-icon" style="background:${t.dotColor}"></span>${t.label}</div>
+        <div class="ebitda-tile-value ${t.colorClass}">${t.value}</div>
       </div>
-    `;
-  }).join("");
+      <div class="ebitda-tile-sub">${t.sub}</div>
+    </div>
+  `).join("");
 }
 
 // ---- Annual summary view ----
@@ -1008,11 +1086,110 @@ function renderAnnual(dateMap) {
   tableEl.innerHTML = html;
 }
 
+// ---- Payouts view (different data shape: per-brand snapshot objects, not date series) ----
+let currentPayoutsTab = "Blended";
+
+function buildPayoutsTabsInto(elId) {
+  const tabsEl = document.getElementById(elId);
+  tabsEl.innerHTML = "";
+  const payoutsData = allData["Payouts"] || {};
+  const names = Object.keys(payoutsData);
+  names.sort((a, b) => (a === "Blended" ? -1 : b === "Blended" ? 1 : 0));
+  names.forEach(name => {
+    const btn = document.createElement("button");
+    btn.className = "tab" + (name === currentPayoutsTab ? " active" : "");
+    btn.textContent = name;
+    btn.onclick = () => { currentPayoutsTab = name; render(); };
+    tabsEl.appendChild(btn);
+  });
+}
+
+function renderPayouts() {
+  const payoutsData = allData["Payouts"] || {};
+  const record = payoutsData[currentPayoutsTab];
+  const el = document.getElementById("payoutsSummary");
+
+  if (!record) {
+    el.innerHTML = `<div style="padding:20px;color:var(--text-dim);grid-column:1/-1;">No payout data yet for ${currentPayoutsTab}.</div>`;
+    return;
+  }
+
+  const balance = record.Balance || 0;
+  const nextAmount = record.NextPayoutAmount || 0;
+  const nextDate = record.NextPayoutDate || "";
+  const nextDateLabel = nextDate
+    ? new Date(nextDate + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+    : "None scheduled";
+
+  el.innerHTML = `
+    <div class="stat">
+      <div class="stat-label">Available Balance</div>
+      <div class="stat-value pos">${formatMoneyFull(balance)}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Next Payout Amount</div>
+      <div class="stat-value">${nextAmount ? formatMoneyFull(nextAmount) : "—"}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Next Payout Date</div>
+      <div class="stat-value" style="font-size:16px;">${nextDateLabel}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Last Updated</div>
+      <div class="stat-value" style="font-size:16px;">${record.Date || "—"}</div>
+    </div>
+  `;
+
+  renderPayoutsHistory(record.History || []);
+}
+
+function renderPayoutsHistory(history) {
+  const tableEl = document.getElementById("payoutsHistoryTable");
+
+  if (!history.length) {
+    tableEl.innerHTML = `<tr><td style="padding:20px;color:var(--text-dim);">No history yet.</td></tr>`;
+    return;
+  }
+
+  const sorted = [...history].sort((a, b) => (a.Date < b.Date ? 1 : -1)); // newest first
+
+  let html = `
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Balance</th>
+        <th>Next Payout Date</th>
+        <th>Next Payout Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  sorted.forEach(r => {
+    const nextDate = r.NextPayoutDate
+      ? new Date(r.NextPayoutDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
+      : "—";
+    const nextAmt = r.NextPayoutAmount ? formatMoneyFull(r.NextPayoutAmount) : "—";
+    html += `
+      <tr>
+        <td>${r.Date}</td>
+        <td>${formatMoneyFull(r.Balance || 0)}</td>
+        <td>${nextDate}</td>
+        <td>${nextAmt}</td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody>";
+  tableEl.innerHTML = html;
+}
+
 // ---- Main render ----
 function render() {
   buildTabsInto("tabs");
   buildTabsInto("tabsEbitda");
   buildTabsInto("tabsAnnual");
+  buildPayoutsTabsInto("tabsPayouts");
 
   const dateMap = getDataByDate();
 
@@ -1031,6 +1208,8 @@ function render() {
     renderEbitda(dateMap);
   } else if (currentView === "annual") {
     renderAnnual(dateMap);
+  } else if (currentView === "payouts") {
+    renderPayouts();
   }
 }
 
