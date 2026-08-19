@@ -863,6 +863,24 @@
       "netMarginV2": -11.0,
       "ordersFloat": 5.0,
       "breakEvenRoasV2": 1.84
+    },
+    {
+      "Date": "2026-08-18",
+      "grossSalesV2": 1764.95,
+      "discountsV2": 447.45,
+      "totalSalesV2": 1373.15,
+      "netRevenueV2": 1373.15,
+      "cogsV2": 610.75,
+      "transactionFees": 38.08,
+      "grossProfitV2": 724.32,
+      "totalAdSpend": 636.6,
+      "facebookAdSpend": 636.6,
+      "googleAdSpend": 0.0,
+      "netProfitV2": 87.72,
+      "grossMarginV2": 52.74,
+      "netMarginV2": 6.38,
+      "ordersFloat": 9.0,
+      "breakEvenRoasV2": 1.89
     }
   ],
   "Lymphea": [
@@ -1297,6 +1315,24 @@
       "netMarginV2": 5.97,
       "ordersFloat": 6.0,
       "breakEvenRoasV2": 1.43
+    },
+    {
+      "Date": "2026-08-18",
+      "grossSalesV2": 1254.7,
+      "discountsV2": 756.82,
+      "totalSalesV2": 497.88,
+      "netRevenueV2": 497.88,
+      "cogsV2": 143.99,
+      "transactionFees": 15.95,
+      "grossProfitV2": 337.94,
+      "totalAdSpend": 169.05,
+      "facebookAdSpend": 169.05,
+      "googleAdSpend": 0.0,
+      "netProfitV2": 168.89,
+      "grossMarginV2": 67.87,
+      "netMarginV2": 33.92,
+      "ordersFloat": 9.0,
+      "breakEvenRoasV2": 1.47
     }
   ],
   "Solea": [
@@ -2163,6 +2199,24 @@
       "netMarginV2": 60.85,
       "ordersFloat": 7.0,
       "breakEvenRoasV2": 1.42
+    },
+    {
+      "Date": "2026-08-18",
+      "grossSalesV2": 594.41,
+      "discountsV2": 332.57,
+      "totalSalesV2": 266.84,
+      "netRevenueV2": 266.84,
+      "cogsV2": 66.47,
+      "transactionFees": 8.13,
+      "grossProfitV2": 192.24,
+      "totalAdSpend": 58.47,
+      "facebookAdSpend": 58.47,
+      "googleAdSpend": 0.0,
+      "netProfitV2": 133.77,
+      "grossMarginV2": 72.04,
+      "netMarginV2": 50.13,
+      "ordersFloat": 3.0,
+      "breakEvenRoasV2": 1.38
     }
   ],
   "FloreVitale": [
@@ -2273,6 +2327,24 @@
       "netMarginV2": -1.1,
       "ordersFloat": 6.0,
       "breakEvenRoasV2": 1.56
+    },
+    {
+      "Date": "2026-08-18",
+      "grossSalesV2": 299.4,
+      "discountsV2": 149.7,
+      "totalSalesV2": 149.7,
+      "netRevenueV2": 149.7,
+      "cogsV2": 53.46,
+      "transactionFees": 4.8,
+      "grossProfitV2": 91.44,
+      "totalAdSpend": 210.32,
+      "facebookAdSpend": 210.32,
+      "googleAdSpend": 0.0,
+      "netProfitV2": -118.88,
+      "grossMarginV2": 61.08,
+      "netMarginV2": -79.41,
+      "ordersFloat": 3.0,
+      "breakEvenRoasV2": 1.63
     }
   ],
   "Blended": [
@@ -3139,98 +3211,24 @@
       "netMarginV2": 12.61,
       "ordersFloat": 24.0,
       "breakEvenRoasV2": 1.6
+    },
+    {
+      "Date": "2026-08-18",
+      "grossSalesV2": 3913.46,
+      "discountsV2": 1686.54,
+      "totalSalesV2": 2287.57,
+      "netRevenueV2": 2287.57,
+      "cogsV2": 874.67,
+      "transactionFees": 66.96,
+      "grossProfitV2": 1345.94,
+      "totalAdSpend": 1074.44,
+      "facebookAdSpend": 1074.44,
+      "googleAdSpend": 0.0,
+      "netProfitV2": 271.5,
+      "grossMarginV2": 58.84,
+      "netMarginV2": 11.87,
+      "ordersFloat": 24.0,
+      "breakEvenRoasV2": 1.7
     }
-  ],
-  "Payouts": {
-    "Lymphea": {
-      "Date": "2026-08-18",
-      "Brand": "Lymphea",
-      "Balance": 2103.77,
-      "NextPayoutDate": "2026-08-19",
-      "NextPayoutAmount": 210.47,
-      "Currency": "CAD",
-      "History": [
-        {
-          "Date": "2026-08-18",
-          "Brand": "Lymphea",
-          "Balance": 2103.77,
-          "NextPayoutDate": "2026-08-19",
-          "NextPayoutAmount": 210.47,
-          "Currency": "CAD"
-        }
-      ]
-    },
-    "Solea": {
-      "Date": "2026-08-18",
-      "Brand": "Solea",
-      "Balance": 938.13,
-      "NextPayoutDate": "2026-08-18",
-      "NextPayoutAmount": 91.21,
-      "Currency": "CAD",
-      "History": [
-        {
-          "Date": "2026-08-18",
-          "Brand": "Solea",
-          "Balance": 938.13,
-          "NextPayoutDate": "2026-08-18",
-          "NextPayoutAmount": 91.21,
-          "Currency": "CAD"
-        }
-      ]
-    },
-    "FloreVitale": {
-      "Date": "2026-08-18",
-      "Brand": "FloreVitale",
-      "Balance": 1182.67,
-      "NextPayoutDate": "",
-      "NextPayoutAmount": "",
-      "Currency": "CAD",
-      "History": [
-        {
-          "Date": "2026-08-18",
-          "Brand": "FloreVitale",
-          "Balance": 1182.67,
-          "NextPayoutDate": "",
-          "NextPayoutAmount": "",
-          "Currency": "CAD"
-        }
-      ]
-    },
-    "Nordik": {
-      "Date": "2026-08-18",
-      "Brand": "Nordik",
-      "Balance": 7898.69,
-      "NextPayoutDate": "2026-08-18",
-      "NextPayoutAmount": 1204.81,
-      "Currency": "CAD",
-      "History": [
-        {
-          "Date": "2026-08-18",
-          "Brand": "Nordik",
-          "Balance": 7898.69,
-          "NextPayoutDate": "2026-08-18",
-          "NextPayoutAmount": 1204.81,
-          "Currency": "CAD"
-        }
-      ]
-    },
-    "Blended": {
-      "Date": "2026-08-18",
-      "Brand": "Blended",
-      "Balance": 12123.26,
-      "NextPayoutDate": "2026-08-18",
-      "NextPayoutAmount": 1506.49,
-      "Currency": "CAD",
-      "History": [
-        {
-          "Date": "2026-08-18",
-          "Brand": "Blended",
-          "Balance": 12123.26,
-          "NextPayoutDate": "2026-08-18",
-          "NextPayoutAmount": 1506.49,
-          "Currency": "CAD"
-        }
-      ]
-    }
-  }
+  ]
 }
