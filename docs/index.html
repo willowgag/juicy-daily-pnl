@@ -11,39 +11,39 @@
   }
 
   html[data-theme="dark"] {
-    --bg: #0b0d10;
-    --panel: #14171b;
-    --panel-raised: #1a1e23;
-    --panel-border: #262b32;
-    --text: #e8eaed;
-    --text-dim: #8b929c;
-    --green-bg: #10221a;
-    --green-text: #4ade80;
-    --red-bg: #26141a;
-    --red-text: #f87171;
-    --neutral-bg: #17191d;
-    --accent: #9b6bff;
-    --accent-text: #fff;
-    --modal-overlay: rgba(0,0,0,0.6);
-    --nav-bg: #0e1013;
+    --bg: #1c1e1a;
+    --panel: #242621;
+    --panel-raised: #2a2c26;
+    --panel-border: #33352e;
+    --text: #c7c5bd;
+    --text-dim: #77756c;
+    --green-bg: #23291f;
+    --green-text: #8ba894;
+    --red-bg: #2b2420;
+    --red-text: #c19073;
+    --neutral-bg: #202220;
+    --accent: #4a6650;
+    --accent-text: #e2e8e0;
+    --modal-overlay: rgba(0,0,0,0.55);
+    --nav-bg: #181a16;
   }
 
   html[data-theme="light"] {
-    --bg: #ece2d0;
-    --panel: #fffcf6;
+    --bg: #f2efe6;
+    --panel: #faf8f2;
     --panel-raised: #ffffff;
-    --panel-border: #d8c9ab;
-    --text: #2a2318;
-    --text-dim: #6b5f4a;
-    --green-bg: #dcecd2;
-    --green-text: #2f6b1f;
-    --red-bg: #f4dcd0;
-    --red-text: #a03a1f;
-    --neutral-bg: #e3d6ba;
-    --accent: #c85a12;
-    --accent-text: #fff;
-    --modal-overlay: rgba(30,24,12,0.4);
-    --nav-bg: #f7f0e2;
+    --panel-border: #e2ddcd;
+    --text: #4a4740;
+    --text-dim: #8f8a7a;
+    --green-bg: #eaf0e9;
+    --green-text: #5f7d68;
+    --red-bg: #f5eae3;
+    --red-text: #b3714f;
+    --neutral-bg: #ece7d9;
+    --accent: #7f9683;
+    --accent-text: #faf8f2;
+    --modal-overlay: rgba(60,55,42,0.35);
+    --nav-bg: #f7f4ec;
   }
 
   * { box-sizing: border-box; }
@@ -741,7 +741,7 @@
       <div class="brand-picker-menu" id="brandMenu-payouts"></div>
     </div>
 
-    <div class="summary-bar" id="payoutsSummary"></div>
+    <div class="summary-bar" id="payoutsSummary" style="grid-template-columns: repeat(2, 1fr); max-width: 480px;"></div>
 
     <div class="range-panel-title" style="margin-top:24px;">Payout History</div>
     <div class="annual-table-wrap" style="margin-top:12px;">
@@ -1140,59 +1140,59 @@ function renderPayouts() {
 
   el.innerHTML = `
     <div class="stat">
-      <div class="stat-label">Available Balance</div>
+      <div class="stat-label">Available balance</div>
       <div class="stat-value pos">${formatMoneyFull(balance)}</div>
     </div>
     <div class="stat">
-      <div class="stat-label">Next Payout Amount</div>
+      <div class="stat-label">Next payout</div>
       <div class="stat-value">${nextAmount ? formatMoneyFull(nextAmount) : "—"}</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Next Payout Date</div>
-      <div class="stat-value" style="font-size:16px;">${nextDateLabel}</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Last Updated</div>
-      <div class="stat-value" style="font-size:16px;">${record.Date || "—"}</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">${nextDateLabel}</div>
     </div>
   `;
 
-  renderPayoutsHistory(record.History || []);
+  renderPayoutsHistory(record.Payouts || []);
 }
 
-function renderPayoutsHistory(history) {
+function statusPill(status) {
+  const map = {
+    SCHEDULED: { label: "Scheduled", color: "var(--text-dim)", bg: "var(--neutral-bg)" },
+    IN_TRANSIT: { label: "In transit", color: "var(--text-dim)", bg: "var(--neutral-bg)" },
+    PAID: { label: "Deposited", color: "var(--green-text)", bg: "var(--green-bg)" },
+    FAILED: { label: "Failed", color: "var(--red-text)", bg: "var(--red-bg)" },
+    CANCELLED: { label: "Cancelled", color: "var(--red-text)", bg: "var(--red-bg)" },
+  };
+  const s = map[status] || { label: status || "—", color: "var(--text-dim)", bg: "var(--neutral-bg)" };
+  return `<span style="background:${s.bg};color:${s.color};font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;white-space:nowrap;">${s.label}</span>`;
+}
+
+function renderPayoutsHistory(payouts) {
   const tableEl = document.getElementById("payoutsHistoryTable");
 
-  if (!history.length) {
-    tableEl.innerHTML = `<tr><td style="padding:20px;color:var(--text-dim);">No history yet.</td></tr>`;
+  if (!payouts.length) {
+    tableEl.innerHTML = `<tr><td style="padding:20px;color:var(--text-dim);">No payouts recorded yet.</td></tr>`;
     return;
   }
 
-  const sorted = [...history].sort((a, b) => (a.Date < b.Date ? 1 : -1));
+  const sorted = [...payouts].sort((a, b) => (a.Date < b.Date ? 1 : -1));
 
   let html = `
     <thead>
       <tr>
-        <th>Date</th>
-        <th>Balance</th>
-        <th>Next Payout Date</th>
-        <th>Next Payout Amount</th>
+        <th>Payout date</th>
+        <th>Status</th>
+        <th>Amount</th>
       </tr>
     </thead>
     <tbody>
   `;
 
-  sorted.forEach(r => {
-    const nextDate = r.NextPayoutDate
-      ? new Date(r.NextPayoutDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
-      : "—";
-    const nextAmt = r.NextPayoutAmount ? formatMoneyFull(r.NextPayoutAmount) : "—";
+  sorted.forEach(p => {
+    const dateLabel = new Date(p.Date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     html += `
       <tr>
-        <td>${r.Date}</td>
-        <td>${formatMoneyFull(r.Balance || 0)}</td>
-        <td>${nextDate}</td>
-        <td>${nextAmt}</td>
+        <td style="text-align:left;">${dateLabel}</td>
+        <td>${statusPill(p.Status)}</td>
+        <td>${formatMoneyFull(p.Amount || 0)}</td>
       </tr>
     `;
   });
