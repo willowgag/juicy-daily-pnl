@@ -1,7 +1,10 @@
 """
-Pulls current Shopify Payments balance and next scheduled payout for each
-configured brand via Shopify's Admin GraphQL API, writes a daily snapshot
-into a 'Payouts Raw' Google Sheet tab, computes a Blended row, and exports
+Pulls Shopify Payments balance and the payout ledger (individual payout records,
+matching Shopify's own Payouts page: date, status, amount) for each configured
+brand via Shopify's Admin GraphQL API. Writes one row per payout into a
+'Payouts Raw' Google Sheet tab (deduplicated by Shopify's payout ID, so re-runs
+never create duplicates even as new payouts appear over time), plus a small
+'Balance Raw' tab tracking the current balance per brand per day. Exports
 everything into docs/data.json under a "Payouts" key.
 
 Environment variables expected (set as GitHub Actions secrets):
@@ -34,14 +37,19 @@ BRANDS = [
     {"name": "Nordik", "token_env": "SHOPIFY_TOKEN_NORDIK", "domain_env": "SHOPIFY_DOMAIN_NORDIK"},
 ]
 
-RAW_TAB_NAME = "Payouts Raw"
-RAW_HEADER = ["Date", "Brand", "Balance", "NextPayoutDate", "NextPayoutAmount", "Currency"]
+PAYOUTS_TAB_NAME = "Payouts Raw"
+PAYOUTS_HEADER = ["PayoutId", "Brand", "Date", "Status", "Amount", "Currency"]
 
+BALANCE_TAB_NAME = "Balance Raw"
+BALANCE_HEADER = ["Date", "Brand", "Balance", "Currency"]
+
+# Pull a wide window of payouts each run so the ledger builds up a real history
+# quickly even though we only run once a day - each is deduplicated by PayoutId.
 GRAPHQL_QUERY = """
 {
   shopifyPaymentsAccount {
     balance { amount currencyCode }
-    payouts(first: 5, sortKey: ISSUED_AT, reverse: true) {
+    payouts(first: 30, sortKey: ISSUED_AT, reverse: true) {
       edges {
         node { id issuedAt status net { amount currencyCode } }
       }
@@ -72,40 +80,84 @@ def fetch_payouts_data(domain, token):
     return data["data"]["shopifyPaymentsAccount"]
 
 
-def extract_snapshot(account_data):
-    """Pulls balance and the next SCHEDULED payout (if any) out of the account data.
-    Returns (balance_amount, currency, next_payout_date, next_payout_amount)."""
+def extract_balance(account_data):
     balance_list = account_data.get("balance", [])
     balance_amount = float(balance_list[0]["amount"]) if balance_list else 0.0
     currency = balance_list[0]["currencyCode"] if balance_list else ""
+    return balance_amount, currency
 
-    next_payout_date = ""
-    next_payout_amount = ""
 
+def extract_payout_rows(account_data, brand_name):
+    """Returns one row per payout: [PayoutId, Brand, Date, Status, Amount, Currency]."""
+    rows = []
     payout_edges = account_data.get("payouts", {}).get("edges", [])
-    # payouts are sorted newest-first; find the first SCHEDULED one
     for edge in payout_edges:
         node = edge["node"]
-        if node.get("status") == "SCHEDULED":
-            next_payout_date = node["issuedAt"][:10]  # trim to YYYY-MM-DD
-            next_payout_amount = float(node["net"]["amount"])
-            break
-
-    return balance_amount, currency, next_payout_date, next_payout_amount
+        payout_id = node["id"]
+        date_str = node["issuedAt"][:10]
+        status = node.get("status", "")
+        amount = float(node["net"]["amount"])
+        currency = node["net"]["currencyCode"]
+        rows.append([payout_id, brand_name, date_str, status, amount, currency])
+    return rows
 
 
 def get_or_create_worksheet(sheet, title, header):
     try:
         ws = sheet.worksheet(title)
     except gspread.WorksheetNotFound:
-        ws = sheet.add_worksheet(title=title, rows=1000, cols=len(header) + 1)
+        ws = sheet.add_worksheet(title=title, rows=2000, cols=len(header) + 1)
         ws.append_row(header)
     return ws
 
 
-def append_rows_if_new(worksheet, rows):
-    """Reads existing (Date, Brand) pairs once, appends only genuinely new rows,
-    in a single batched write."""
+def append_payout_rows_if_new(worksheet, rows):
+    """Dedupes by PayoutId (column A)."""
+    if not rows:
+        return
+    all_values = worksheet.get_all_values()
+    existing_ids = {row[0] for row in all_values[1:] if row}
+    new_rows = [row for row in rows if row[0] not in existing_ids]
+    if new_rows:
+        worksheet.append_rows(new_rows)
+        print(f"  Wrote {len(new_rows)} new payout row(s).")
+    skipped = len(rows) - len(new_rows)
+    if skipped:
+        print(f"  Skipped {skipped} payout(s) already recorded.")
+
+
+def update_payout_statuses(worksheet, rows):
+    """Updates the Status cell for any existing payout rows whose status has
+    changed since last recorded (e.g. SCHEDULED -> PAID). One batched read,
+    only writes cells that actually changed."""
+    all_values = worksheet.get_all_values()
+    if len(all_values) < 2:
+        return
+
+    header = all_values[0]
+    id_col = header.index("PayoutId")
+    status_col = header.index("Status")
+
+    id_to_row_num = {row[id_col]: i + 2 for i, row in enumerate(all_values[1:]) if row}
+
+    updates = []
+    for row in rows:
+        payout_id, _, _, new_status, _, _ = row
+        row_num = id_to_row_num.get(payout_id)
+        if row_num is None:
+            continue
+        existing_row = all_values[row_num - 1]
+        current_status = existing_row[status_col] if status_col < len(existing_row) else ""
+        if current_status != new_status:
+            cell_label = gspread.utils.rowcol_to_a1(row_num, status_col + 1)
+            updates.append({"range": cell_label, "values": [[new_status]]})
+
+    if updates:
+        worksheet.batch_update(updates)
+        print(f"  Updated status on {len(updates)} existing payout(s).")
+
+
+def append_balance_rows_if_new(worksheet, rows):
     if not rows:
         return
     all_values = worksheet.get_all_values()
@@ -113,99 +165,97 @@ def append_rows_if_new(worksheet, rows):
     new_rows = [row for row in rows if (row[0], row[1]) not in existing]
     if new_rows:
         worksheet.append_rows(new_rows)
-        for row in new_rows:
-            print(f"  Wrote payout snapshot for {row[1]} on {row[0]}.")
+        print(f"  Wrote {len(new_rows)} balance snapshot(s).")
     skipped = len(rows) - len(new_rows)
     if skipped:
-        print(f"  Skipped {skipped} row(s) already present.")
+        print(f"  Skipped {skipped} balance snapshot(s) already present.")
 
 
 def export_payouts_json(sheet, brand_names, output_path="docs/data.json"):
-    """Reads 'Payouts Raw', computes latest snapshot per brand + Blended,
-    merges into docs/data.json under the "Payouts" key without overwriting
-    other keys already written by pull_juicy_data.py / export_mrr_data.py."""
+    """Reads the full payout ledger + latest balance per brand, merges into
+    docs/data.json under the "Payouts" key without overwriting other keys."""
     try:
-        ws = sheet.worksheet(RAW_TAB_NAME)
+        payouts_ws = sheet.worksheet(PAYOUTS_TAB_NAME)
+        payout_values = payouts_ws.get_all_values()
     except gspread.WorksheetNotFound:
-        print(f"  Tab '{RAW_TAB_NAME}' not found, skipping Payouts export.")
-        return
+        payout_values = []
 
-    all_values = ws.get_all_values()
-    if not all_values or len(all_values) < 2:
+    try:
+        balance_ws = sheet.worksheet(BALANCE_TAB_NAME)
+        balance_values = balance_ws.get_all_values()
+    except gspread.WorksheetNotFound:
+        balance_values = []
+
+    if not payout_values or len(payout_values) < 2:
         print("  No payout rows yet, skipping Payouts export.")
         return
 
-    header = all_values[0]
-    rows = all_values[1:]
-
-    records = []
-    for row in rows:
+    payout_header = payout_values[0]
+    payout_records = []
+    for row in payout_values[1:]:
         record = {}
-        for i, col_name in enumerate(header):
+        for i, col_name in enumerate(payout_header):
             value = row[i] if i < len(row) else ""
-            if col_name in ("Balance", "NextPayoutAmount") and value != "":
+            if col_name == "Amount" and value != "":
                 try:
                     value = float(value)
                 except ValueError:
                     pass
             record[col_name] = value
-        records.append(record)
+        payout_records.append(record)
 
-    # Latest snapshot per brand (by most recent Date) - used for the summary tiles
-    latest_by_brand = {}
-    for r in records:
-        name = r["Brand"]
-        if name not in latest_by_brand or r["Date"] > latest_by_brand[name]["Date"]:
-            latest_by_brand[name] = r
+    balance_records = []
+    if balance_values and len(balance_values) >= 2:
+        balance_header = balance_values[0]
+        for row in balance_values[1:]:
+            record = {}
+            for i, col_name in enumerate(balance_header):
+                value = row[i] if i < len(row) else ""
+                if col_name == "Balance" and value != "":
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        pass
+                record[col_name] = value
+            balance_records.append(record)
 
-    # Full history per brand, sorted oldest to newest - used for the history table
-    history_by_brand = {}
-    for r in records:
+    payouts_by_brand = {}
+    for r in payout_records:
+        payouts_by_brand.setdefault(r["Brand"], []).append(r)
+    for name in payouts_by_brand:
+        payouts_by_brand[name].sort(key=lambda r: r["Date"], reverse=True)
+
+    latest_balance_by_brand = {}
+    for r in balance_records:
         name = r["Brand"]
-        history_by_brand.setdefault(name, []).append(r)
-    for name in history_by_brand:
-        history_by_brand[name].sort(key=lambda r: r["Date"])
+        if name not in latest_balance_by_brand or r["Date"] > latest_balance_by_brand[name]["Date"]:
+            latest_balance_by_brand[name] = r
 
     payouts_output = {}
     for name in brand_names:
-        if name in latest_by_brand:
-            payouts_output[name] = dict(latest_by_brand[name])
-            payouts_output[name]["History"] = history_by_brand.get(name, [])
+        brand_payouts = payouts_by_brand.get(name, [])
+        next_scheduled = next((p for p in brand_payouts if p["Status"] == "SCHEDULED"), None)
+        payouts_output[name] = {
+            "Balance": (latest_balance_by_brand.get(name) or {}).get("Balance", 0),
+            "Currency": (latest_balance_by_brand.get(name) or {}).get("Currency", ""),
+            "NextPayoutDate": next_scheduled["Date"] if next_scheduled else "",
+            "NextPayoutAmount": next_scheduled["Amount"] if next_scheduled else "",
+            "Payouts": brand_payouts,
+        }
 
-    # Blended: sum balances and next-payout amounts across brands with a snapshot today
-    total_balance = sum((r.get("Balance") or 0) for r in latest_by_brand.values())
-    total_next_payout = sum((r.get("NextPayoutAmount") or 0) for r in latest_by_brand.values() if r.get("NextPayoutAmount"))
-    # Use the soonest next payout date among brands that have one, for display purposes
-    next_dates = [r["NextPayoutDate"] for r in latest_by_brand.values() if r.get("NextPayoutDate")]
-    soonest_date = min(next_dates) if next_dates else ""
-    currency = next(iter(latest_by_brand.values()), {}).get("Currency", "")
+    total_balance = sum((v["Balance"] or 0) for v in payouts_output.values())
+    next_amounts = [v["NextPayoutAmount"] for v in payouts_output.values() if v["NextPayoutAmount"]]
+    next_dates = [v["NextPayoutDate"] for v in payouts_output.values() if v["NextPayoutDate"]]
+    currency = next((v["Currency"] for v in payouts_output.values() if v["Currency"]), "")
 
-    # Blended history: sum Balance/NextPayoutAmount across brands for each date that
-    # has at least one brand's snapshot that day
-    all_dates = sorted(set(r["Date"] for r in records))
-    blended_history = []
-    for date_str in all_dates:
-        day_records = [r for r in records if r["Date"] == date_str]
-        day_balance = sum((r.get("Balance") or 0) for r in day_records)
-        day_next_amounts = [r.get("NextPayoutAmount") or 0 for r in day_records if r.get("NextPayoutAmount")]
-        day_next_dates = [r["NextPayoutDate"] for r in day_records if r.get("NextPayoutDate")]
-        blended_history.append({
-            "Date": date_str,
-            "Brand": "Blended",
-            "Balance": round(day_balance, 2),
-            "NextPayoutDate": min(day_next_dates) if day_next_dates else "",
-            "NextPayoutAmount": round(sum(day_next_amounts), 2) if day_next_amounts else "",
-            "Currency": day_records[0].get("Currency", "") if day_records else "",
-        })
+    all_payouts_sorted = sorted(payout_records, key=lambda r: r["Date"], reverse=True)
 
     payouts_output["Blended"] = {
-        "Date": max((r["Date"] for r in latest_by_brand.values()), default=""),
-        "Brand": "Blended",
         "Balance": round(total_balance, 2),
-        "NextPayoutDate": soonest_date,
-        "NextPayoutAmount": round(total_next_payout, 2),
         "Currency": currency,
-        "History": blended_history,
+        "NextPayoutDate": min(next_dates) if next_dates else "",
+        "NextPayoutAmount": round(sum(next_amounts), 2) if next_amounts else "",
+        "Payouts": all_payouts_sorted,
     }
 
     existing = {}
@@ -239,7 +289,8 @@ def main():
     today = get_today()
     print(f"Pulling payouts data for {today}...")
 
-    rows_to_write = []
+    all_payout_rows = []
+    all_balance_rows = []
 
     for brand in BRANDS:
         name = brand["name"]
@@ -257,11 +308,18 @@ def main():
             print(f"  ERROR fetching {name}: {e}")
             continue
 
-        balance, currency, next_date, next_amount = extract_snapshot(account_data)
-        rows_to_write.append([today, name, balance, next_date, next_amount, currency])
+        balance, currency = extract_balance(account_data)
+        all_balance_rows.append([today, name, balance, currency])
 
-    ws = get_or_create_worksheet(sheet, RAW_TAB_NAME, RAW_HEADER)
-    append_rows_if_new(ws, rows_to_write)
+        payout_rows = extract_payout_rows(account_data, name)
+        all_payout_rows.extend(payout_rows)
+
+    payouts_ws = get_or_create_worksheet(sheet, PAYOUTS_TAB_NAME, PAYOUTS_HEADER)
+    append_payout_rows_if_new(payouts_ws, all_payout_rows)
+    update_payout_statuses(payouts_ws, all_payout_rows)
+
+    balance_ws = get_or_create_worksheet(sheet, BALANCE_TAB_NAME, BALANCE_HEADER)
+    append_balance_rows_if_new(balance_ws, all_balance_rows)
 
     print("Exporting Payouts dashboard JSON...")
     export_payouts_json(sheet, [b["name"] for b in BRANDS])
