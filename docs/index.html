@@ -1167,6 +1167,7 @@ function statusPill(status) {
 
 function renderPayoutsHistory(payouts) {
   const tableEl = document.getElementById("payoutsHistoryTable");
+  const showBrandColumn = currentPayoutsTab === "Blended";
 
   if (!payouts.length) {
     tableEl.innerHTML = `<tr><td style="padding:20px;color:var(--text-dim);">No payouts recorded yet.</td></tr>`;
@@ -1179,6 +1180,7 @@ function renderPayoutsHistory(payouts) {
     <thead>
       <tr>
         <th>Payout date</th>
+        ${showBrandColumn ? "<th>Brand</th>" : ""}
         <th>Status</th>
         <th>Amount</th>
       </tr>
@@ -1191,6 +1193,7 @@ function renderPayoutsHistory(payouts) {
     html += `
       <tr>
         <td style="text-align:left;">${dateLabel}</td>
+        ${showBrandColumn ? `<td style="text-align:left;">${p.Brand}</td>` : ""}
         <td>${statusPill(p.Status)}</td>
         <td>${formatMoneyFull(p.Amount || 0)}</td>
       </tr>
