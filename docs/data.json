@@ -3230,5 +3230,137 @@
       "ordersFloat": 24.0,
       "breakEvenRoasV2": 1.7
     }
-  ]
+  ],
+  "Payouts": {
+    "Lymphea": {
+      "Date": "2026-08-19",
+      "Brand": "Lymphea",
+      "Balance": 2179.43,
+      "NextPayoutDate": "2026-08-20",
+      "NextPayoutAmount": 406.27,
+      "Currency": "CAD",
+      "History": [
+        {
+          "Date": "2026-08-18",
+          "Brand": "Lymphea",
+          "Balance": 2103.77,
+          "NextPayoutDate": "2026-08-19",
+          "NextPayoutAmount": 210.47,
+          "Currency": "CAD"
+        },
+        {
+          "Date": "2026-08-19",
+          "Brand": "Lymphea",
+          "Balance": 2179.43,
+          "NextPayoutDate": "2026-08-20",
+          "NextPayoutAmount": 406.27,
+          "Currency": "CAD"
+        }
+      ]
+    },
+    "Solea": {
+      "Date": "2026-08-19",
+      "Brand": "Solea",
+      "Balance": 258.71,
+      "NextPayoutDate": "2026-08-20",
+      "NextPayoutAmount": 514.76,
+      "Currency": "CAD",
+      "History": [
+        {
+          "Date": "2026-08-18",
+          "Brand": "Solea",
+          "Balance": 938.13,
+          "NextPayoutDate": "2026-08-18",
+          "NextPayoutAmount": 91.21,
+          "Currency": "CAD"
+        },
+        {
+          "Date": "2026-08-19",
+          "Brand": "Solea",
+          "Balance": 258.71,
+          "NextPayoutDate": "2026-08-20",
+          "NextPayoutAmount": 514.76,
+          "Currency": "CAD"
+        }
+      ]
+    },
+    "FloreVitale": {
+      "Date": "2026-08-19",
+      "Brand": "FloreVitale",
+      "Balance": 1327.57,
+      "NextPayoutDate": "",
+      "NextPayoutAmount": "",
+      "Currency": "CAD",
+      "History": [
+        {
+          "Date": "2026-08-18",
+          "Brand": "FloreVitale",
+          "Balance": 1182.67,
+          "NextPayoutDate": "",
+          "NextPayoutAmount": "",
+          "Currency": "CAD"
+        },
+        {
+          "Date": "2026-08-19",
+          "Brand": "FloreVitale",
+          "Balance": 1327.57,
+          "NextPayoutDate": "",
+          "NextPayoutAmount": "",
+          "Currency": "CAD"
+        }
+      ]
+    },
+    "Nordik": {
+      "Date": "2026-08-19",
+      "Brand": "Nordik",
+      "Balance": 1310.07,
+      "NextPayoutDate": "2026-08-20",
+      "NextPayoutAmount": 801.3,
+      "Currency": "CAD",
+      "History": [
+        {
+          "Date": "2026-08-18",
+          "Brand": "Nordik",
+          "Balance": 7898.69,
+          "NextPayoutDate": "2026-08-18",
+          "NextPayoutAmount": 1204.81,
+          "Currency": "CAD"
+        },
+        {
+          "Date": "2026-08-19",
+          "Brand": "Nordik",
+          "Balance": 1310.07,
+          "NextPayoutDate": "2026-08-20",
+          "NextPayoutAmount": 801.3,
+          "Currency": "CAD"
+        }
+      ]
+    },
+    "Blended": {
+      "Date": "2026-08-19",
+      "Brand": "Blended",
+      "Balance": 5075.78,
+      "NextPayoutDate": "2026-08-20",
+      "NextPayoutAmount": 1722.33,
+      "Currency": "CAD",
+      "History": [
+        {
+          "Date": "2026-08-18",
+          "Brand": "Blended",
+          "Balance": 12123.26,
+          "NextPayoutDate": "2026-08-18",
+          "NextPayoutAmount": 1506.49,
+          "Currency": "CAD"
+        },
+        {
+          "Date": "2026-08-19",
+          "Brand": "Blended",
+          "Balance": 5075.78,
+          "NextPayoutDate": "2026-08-20",
+          "NextPayoutAmount": 1722.33,
+          "Currency": "CAD"
+        }
+      ]
+    }
+  }
 }
