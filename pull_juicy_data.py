@@ -224,6 +224,11 @@ def export_json_for_dashboard(sheet, brand_names, output_path="docs/data.json"):
     """Reads every row from each brand tab + Blended tab and writes it all into a single
     JSON file the GitHub Pages dashboard can fetch. Structure:
     { "Nordik": [{date, netProfitV2, ...}, ...], "Lymphea": [...], "Blended": [...] }
+
+    Merges into the existing file rather than overwriting it, since a separate
+    workflow (pull_payouts_data.py) writes its own "Payouts" key into the same
+    file - overwriting here would silently erase that data whenever this script
+    runs after the Payouts pull.
     """
     tabs_to_export = brand_names + ["Blended"]
     output = {}
@@ -247,6 +252,8 @@ def export_json_for_dashboard(sheet, brand_names, output_path="docs/data.json"):
         for row in rows:
             record = {}
             for i, col_name in enumerate(header):
+                if not col_name:
+                    continue  # skip blank/stray header columns rather than writing a "" key
                 value = row[i] if i < len(row) else ""
                 # try to convert numeric strings back to numbers for the dashboard
                 if col_name != "Date" and value != "":
@@ -259,9 +266,23 @@ def export_json_for_dashboard(sheet, brand_names, output_path="docs/data.json"):
 
         output[tab_name] = tab_records
 
+    # Merge into existing data.json rather than overwrite - a separate script
+    # (pull_payouts_data.py) writes its own "Payouts" key into this same file,
+    # so we only replace our own keys (brand names + "Blended") and leave anything
+    # else already in the file untouched.
+    existing = {}
+    if os.path.exists(output_path):
+        try:
+            with open(output_path, "r") as f:
+                existing = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            existing = {}
+
+    existing.update(output)
+
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w") as f:
-        json.dump(output, f, indent=2)
+        json.dump(existing, f, indent=2)
     print(f"  Wrote dashboard data to {output_path}")
 
 def send_telegram_message(text):
