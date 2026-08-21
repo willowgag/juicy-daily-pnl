@@ -5,10 +5,62 @@ let currentMetaTab = "Blended";
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 let currentView = "calendar";
-let ebitdaCustomRange = null; // {start, end} or null (use month nav)
+let ebitdaPreset = "This month";
+let ebitdaCustomRange = null; // {start, end} - only used when preset is "Custom"
+let metaPreset = "Last 30 days";
 let metaCustomRange = null;
 
 const VIEW_LABELS = { calendar: "Calendar", ebitda: "EBITDA", annual: "Annual", payouts: "Payouts", metaads: "Meta Ads" };
+
+const DATE_PRESETS = ["Yesterday", "Last 7 days", "Last 14 days", "Last 30 days", "This month", "Last month", "Maximum"];
+
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function daysAgoStr(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Resolves a preset name into a concrete {start, end} range. `allRowsForMax` is
+ * the full row list for the current tab, used only by "Maximum" to find the
+ * earliest date actually present in the data. */
+function resolvePreset(presetName, allRowsForMax) {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = today.getMonth();
+
+  switch (presetName) {
+    case "Yesterday": {
+      const d = daysAgoStr(1);
+      return { start: d, end: d };
+    }
+    case "Last 7 days":
+      return { start: daysAgoStr(7), end: todayStr() };
+    case "Last 14 days":
+      return { start: daysAgoStr(14), end: todayStr() };
+    case "Last 30 days":
+      return { start: daysAgoStr(30), end: todayStr() };
+    case "This month": {
+      const start = new Date(y, m, 1).toISOString().slice(0, 10);
+      return { start, end: todayStr() };
+    }
+    case "Last month": {
+      const start = new Date(y, m - 1, 1).toISOString().slice(0, 10);
+      const end = new Date(y, m, 0).toISOString().slice(0, 10);
+      return { start, end };
+    }
+    case "Maximum": {
+      if (!allRowsForMax || allRowsForMax.length === 0) return { start: todayStr(), end: todayStr() };
+      const dates = allRowsForMax.map(r => r.Date).filter(Boolean).sort();
+      return { start: dates[0], end: dates[dates.length - 1] };
+    }
+    default:
+      return { start: daysAgoStr(30), end: todayStr() };
+  }
+}
 
 // ---- Theme ----
 function initTheme() {
@@ -101,21 +153,33 @@ function buildBrandPicker(viewKey, names, currentValue, onSelect) {
     item.onclick = () => {
       onSelect(name);
       pickerEl.classList.remove("open");
+      updateBrandPickerScrim();
     };
     menuEl.appendChild(item);
   });
 
   buttonEl.onclick = (e) => {
     e.stopPropagation();
-    document.querySelectorAll(".brand-picker").forEach(p => {
-      if (p !== pickerEl) p.classList.remove("open");
-    });
-    pickerEl.classList.toggle("open");
+    const wasOpen = pickerEl.classList.contains("open");
+    document.querySelectorAll(".brand-picker").forEach(p => p.classList.remove("open"));
+    if (!wasOpen) pickerEl.classList.add("open");
+    updateBrandPickerScrim();
   };
 }
 
+function updateBrandPickerScrim() {
+  const anyOpen = document.querySelector(".brand-picker.open") !== null;
+  document.getElementById("brandPickerScrim").classList.toggle("active", anyOpen);
+}
+
+document.getElementById("brandPickerScrim").onclick = () => {
+  document.querySelectorAll(".brand-picker").forEach(p => p.classList.remove("open"));
+  updateBrandPickerScrim();
+};
+
 document.addEventListener("click", () => {
   document.querySelectorAll(".brand-picker").forEach(p => p.classList.remove("open"));
+  updateBrandPickerScrim();
 });
 
 function getDataByDate() {
@@ -254,16 +318,24 @@ document.getElementById("nextMonth").onclick = () => {
 
 // ---- EBITDA tile view (with date range picker) ----
 document.getElementById("prevMonthEbitda").onclick = () => {
-  ebitdaCustomRange = null;
   currentMonth--;
   if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  ebitdaPreset = "This month";
+  ebitdaCustomRange = resolvePreset("This month");
+  // month nav should reflect currentMonth/currentYear directly rather than "today"
+  const start = new Date(currentYear, currentMonth, 1).toISOString().slice(0, 10);
+  const end = new Date(currentYear, currentMonth + 1, 0).toISOString().slice(0, 10);
+  ebitdaCustomRange = { start, end };
   render();
 };
 
 document.getElementById("nextMonthEbitda").onclick = () => {
-  ebitdaCustomRange = null;
   currentMonth++;
   if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  ebitdaPreset = "This month";
+  const start = new Date(currentYear, currentMonth, 1).toISOString().slice(0, 10);
+  const end = new Date(currentYear, currentMonth + 1, 0).toISOString().slice(0, 10);
+  ebitdaCustomRange = { start, end };
   render();
 };
 
@@ -271,33 +343,21 @@ document.getElementById("ebitdaRangeApply").onclick = () => {
   const start = document.getElementById("ebitdaRangeStart").value;
   const end = document.getElementById("ebitdaRangeEnd").value;
   if (!start || !end) return;
+  ebitdaPreset = "Custom";
   ebitdaCustomRange = { start, end };
-  render();
-};
-
-document.getElementById("ebitdaRangeClear").onclick = () => {
-  ebitdaCustomRange = null;
-  document.getElementById("ebitdaRangeStart").value = "";
-  document.getElementById("ebitdaRangeEnd").value = "";
   render();
 };
 
 function renderEbitda(dateMap) {
   const monthNavEl = document.getElementById("ebitdaMonthNav");
-  let rows, rangeLabel;
+  monthNavEl.style.display = "none"; // month nav retired in favor of the preset dropdown + manual range
 
-  if (ebitdaCustomRange) {
-    monthNavEl.style.display = "none";
-    rows = Object.values(dateMap).filter(r => r.Date >= ebitdaCustomRange.start && r.Date <= ebitdaCustomRange.end);
-    rangeLabel = `${ebitdaCustomRange.start} to ${ebitdaCustomRange.end}`;
-  } else {
-    monthNavEl.style.display = "flex";
-    const monthLabel = new Date(currentYear, currentMonth, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
-    document.getElementById("monthLabelEbitda").textContent = monthLabel;
-    const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
-    rows = Object.values(dateMap).filter(r => r.Date.startsWith(monthPrefix));
-    rangeLabel = monthLabel;
+  if (!ebitdaCustomRange) {
+    ebitdaCustomRange = resolvePreset(ebitdaPreset, allData[currentTab]);
   }
+
+  const rows = Object.values(dateMap).filter(r => r.Date >= ebitdaCustomRange.start && r.Date <= ebitdaCustomRange.end);
+  const rangeLabel = `${ebitdaCustomRange.start} to ${ebitdaCustomRange.end}`;
 
   const gridEl = document.getElementById("waterfall");
   if (rows.length === 0) {
@@ -503,26 +563,17 @@ document.getElementById("metaRangeApply").onclick = () => {
   const start = document.getElementById("metaRangeStart").value;
   const end = document.getElementById("metaRangeEnd").value;
   if (!start || !end) return;
+  metaPreset = "Custom";
   metaCustomRange = { start, end };
-  render();
-};
-
-document.getElementById("metaRangeClear").onclick = () => {
-  metaCustomRange = null;
-  document.getElementById("metaRangeStart").value = "";
-  document.getElementById("metaRangeEnd").value = "";
   render();
 };
 
 function getMetaRows() {
   const rows = allData[currentMetaTab] || [];
-  if (metaCustomRange) {
-    return rows.filter(r => r.Date >= metaCustomRange.start && r.Date <= metaCustomRange.end);
+  if (!metaCustomRange) {
+    metaCustomRange = resolvePreset(metaPreset, rows);
   }
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - 30);
-  const cutoffStr = cutoff.toISOString().slice(0, 10);
-  return rows.filter(r => r.Date >= cutoffStr);
+  return rows.filter(r => r.Date >= metaCustomRange.start && r.Date <= metaCustomRange.end);
 }
 
 function renderMetaAds() {
@@ -590,6 +641,7 @@ function openMetricChart(metricKey, label, rows) {
     wrapEl.innerHTML = `<div style="padding:20px;color:var(--text-dim);font-size:13px;">Not enough data points to chart yet.</div>`;
   } else {
     wrapEl.innerHTML = buildLineChartSvg(points, metricKey);
+    wireChartTooltip();
   }
 
   document.getElementById("chartModalOverlay").classList.add("open");
@@ -620,8 +672,17 @@ function buildLineChartSvg(points, metricKey) {
 
   const dots = coords.map(c => `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="2.5" fill="var(--accent)" />`).join("");
 
+  // Invisible larger hit targets per point, each carrying its data via data-* attrs
+  // for the shared mousemove handler to read and position a tooltip against.
+  const hitTargets = coords.map((c, i) => {
+    const dateLabel = new Date(c.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const valueLabel = formatMetricValue(metricKey, c.value);
+    return `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="10" fill="transparent" class="chart-hit" data-date="${dateLabel}" data-value="${valueLabel}" />`;
+  }).join("");
+
   return `
-    <svg viewBox="0 0 ${width} ${height}" style="width:100%;height:auto;font-family:var(--font-body);">
+    <div id="chartTooltip" style="position:absolute;display:none;background:var(--panel-solid);border:1px solid var(--panel-border);border-radius:8px;padding:6px 10px;font-size:12px;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.25);z-index:10;white-space:nowrap;"></div>
+    <svg viewBox="0 0 ${width} ${height}" style="width:100%;height:auto;font-family:var(--font-body);overflow:visible;" id="chartSvg">
       <line x1="${padding.left}" y1="${padding.top}" x2="${padding.left}" y2="${padding.top + chartH}" stroke="var(--panel-border)" stroke-width="1" />
       <line x1="${padding.left}" y1="${padding.top + chartH}" x2="${width - padding.right}" y2="${padding.top + chartH}" stroke="var(--panel-border)" stroke-width="1" />
       <path d="${areaPath}" fill="var(--accent)" opacity="0.12" />
@@ -631,9 +692,32 @@ function buildLineChartSvg(points, metricKey) {
       <text x="${width - padding.right}" y="${height - 6}" fill="var(--text-dim)" font-size="10" text-anchor="end">${lastLabel}</text>
       <text x="${padding.left - 6}" y="${padding.top + 4}" fill="var(--text-dim)" font-size="10" text-anchor="end">${formatMetricValue(metricKey, Math.max(...points.map(p => p.value)))}</text>
       <text x="${padding.left - 6}" y="${padding.top + chartH}" fill="var(--text-dim)" font-size="10" text-anchor="end">${formatMetricValue(metricKey, Math.min(...points.map(p => p.value)))}</text>
+      ${hitTargets}
     </svg>
   `;
 }
+
+function wireChartTooltip() {
+  const svgEl = document.getElementById("chartSvg");
+  const tooltipEl = document.getElementById("chartTooltip");
+  if (!svgEl || !tooltipEl) return;
+
+  svgEl.querySelectorAll(".chart-hit").forEach(hit => {
+    hit.addEventListener("mouseenter", (e) => {
+      tooltipEl.textContent = `${hit.dataset.date} — ${hit.dataset.value}`;
+      tooltipEl.style.display = "block";
+    });
+    hit.addEventListener("mousemove", (e) => {
+      const wrapRect = document.getElementById("chartSvgWrap").getBoundingClientRect();
+      tooltipEl.style.left = (e.clientX - wrapRect.left + 12) + "px";
+      tooltipEl.style.top = (e.clientY - wrapRect.top - 28) + "px";
+    });
+    hit.addEventListener("mouseleave", () => {
+      tooltipEl.style.display = "none";
+    });
+  });
+}
+
 
 document.getElementById("chartModalClose").onclick = () => {
   document.getElementById("chartModalOverlay").classList.remove("open");
@@ -653,6 +737,22 @@ function render() {
 
   const payoutsBrands = getPayoutsBrandNames();
   buildBrandPicker("payouts", payoutsBrands, currentPayoutsTab, (name) => { currentPayoutsTab = name; render(); });
+
+  buildBrandPicker("ebitdaPreset", DATE_PRESETS, ebitdaPreset, (name) => {
+    ebitdaPreset = name;
+    ebitdaCustomRange = null; // force recompute from the newly chosen preset
+    document.getElementById("ebitdaRangeStart").value = "";
+    document.getElementById("ebitdaRangeEnd").value = "";
+    render();
+  });
+
+  buildBrandPicker("metaPreset", DATE_PRESETS, metaPreset, (name) => {
+    metaPreset = name;
+    metaCustomRange = null;
+    document.getElementById("metaRangeStart").value = "";
+    document.getElementById("metaRangeEnd").value = "";
+    render();
+  });
 
   const dateMap = getDataByDate();
 
