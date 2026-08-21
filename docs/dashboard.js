@@ -182,6 +182,142 @@ document.addEventListener("click", () => {
   updateBrandPickerScrim();
 });
 
+// ---- Single-window calendar range picker (click a start day, then an end day) ----
+// Tracks its own per-instance nav month and in-progress selection state, keyed by
+// instanceKey ("ebitda" or "meta") so the two pickers don't interfere with each other.
+const rangePickerState = {};
+
+function updateRangePickerScrim() {
+  const anyOpen = document.querySelector(".range-picker.open") !== null;
+  document.getElementById("rangePickerScrim").classList.toggle("active", anyOpen);
+}
+
+document.getElementById("rangePickerScrim").onclick = () => {
+  document.querySelectorAll(".range-picker").forEach(p => p.classList.remove("open"));
+  updateRangePickerScrim();
+};
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".range-picker").forEach(p => p.classList.remove("open"));
+  updateRangePickerScrim();
+});
+
+function buildRangePicker(instanceKey, currentPreset, currentRange, onApply) {
+  const pickerEl = document.getElementById("rangePicker-" + instanceKey);
+  const buttonEl = pickerEl.querySelector(".range-picker-button");
+  const labelEl = buttonEl.querySelector("[data-label]");
+  const popoverEl = document.getElementById("rangePopover-" + instanceKey);
+
+  if (!rangePickerState[instanceKey]) {
+    const base = currentRange || resolvePreset(currentPreset);
+    rangePickerState[instanceKey] = {
+      navMonth: new Date(base.end + "T00:00:00").getMonth(),
+      navYear: new Date(base.end + "T00:00:00").getFullYear(),
+      pendingStart: null,
+    };
+  }
+  const state = rangePickerState[instanceKey];
+
+  labelEl.textContent = currentPreset === "Custom" && currentRange
+    ? `${currentRange.start} to ${currentRange.end}`
+    : currentPreset;
+
+  buttonEl.onclick = (e) => {
+    e.stopPropagation();
+    const wasOpen = pickerEl.classList.contains("open");
+    document.querySelectorAll(".range-picker").forEach(p => p.classList.remove("open"));
+    if (!wasOpen) pickerEl.classList.add("open");
+    updateRangePickerScrim();
+    if (!wasOpen) renderRangePickerPopover(instanceKey, currentRange, onApply);
+  };
+
+  popoverEl.onclick = (e) => e.stopPropagation();
+
+  if (pickerEl.classList.contains("open")) {
+    renderRangePickerPopover(instanceKey, currentRange, onApply);
+  }
+}
+
+function renderRangePickerPopover(instanceKey, currentRange, onApply) {
+  const popoverEl = document.getElementById("rangePopover-" + instanceKey);
+  const state = rangePickerState[instanceKey];
+
+  const monthLabel = new Date(state.navYear, state.navMonth, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const firstDay = new Date(state.navYear, state.navMonth, 1).getDay();
+  const daysInMonth = new Date(state.navYear, state.navMonth + 1, 0).getDate();
+
+  const selStart = state.pendingStart || (currentRange ? currentRange.start : null);
+  const selEnd = (!state.pendingStart && currentRange) ? currentRange.end : null;
+
+  let dayCells = "";
+  for (let i = 0; i < firstDay; i++) {
+    dayCells += `<div class="range-picker-day empty"></div>`;
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${state.navYear}-${String(state.navMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    let cls = "range-picker-day";
+    if (selStart && dateStr === selStart) cls += " range-start";
+    if (selEnd && dateStr === selEnd) cls += " range-end";
+    if (selStart && selEnd && dateStr > selStart && dateStr < selEnd) cls += " in-range";
+    dayCells += `<button class="${cls}" data-date="${dateStr}">${d}</button>`;
+  }
+
+  popoverEl.innerHTML = `
+    <div class="range-picker-presets">
+      ${DATE_PRESETS.map(p => `<button class="range-picker-preset" data-preset="${p}">${p}</button>`).join("")}
+    </div>
+    <div class="range-picker-month-nav">
+      <button data-nav="prev">&#8249;</button>
+      <div class="range-picker-month-label">${monthLabel}</div>
+      <button data-nav="next">&#8250;</button>
+    </div>
+    <div class="range-picker-weekdays">
+      <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+    </div>
+    <div class="range-picker-grid">${dayCells}</div>
+  `;
+
+  popoverEl.querySelectorAll(".range-picker-preset").forEach(btn => {
+    btn.onclick = () => {
+      const range = resolvePreset(btn.dataset.preset);
+      state.pendingStart = null;
+      document.getElementById("rangePicker-" + instanceKey).classList.remove("open");
+      updateRangePickerScrim();
+      onApply(btn.dataset.preset, range);
+    };
+  });
+
+  popoverEl.querySelector('[data-nav="prev"]').onclick = () => {
+    state.navMonth--;
+    if (state.navMonth < 0) { state.navMonth = 11; state.navYear--; }
+    renderRangePickerPopover(instanceKey, currentRange, onApply);
+  };
+
+  popoverEl.querySelector('[data-nav="next"]').onclick = () => {
+    state.navMonth++;
+    if (state.navMonth > 11) { state.navMonth = 0; state.navYear++; }
+    renderRangePickerPopover(instanceKey, currentRange, onApply);
+  };
+
+  popoverEl.querySelectorAll(".range-picker-day:not(.empty)").forEach(dayBtn => {
+    dayBtn.onclick = () => {
+      const clickedDate = dayBtn.dataset.date;
+      if (!state.pendingStart) {
+        state.pendingStart = clickedDate;
+        renderRangePickerPopover(instanceKey, currentRange, onApply);
+      } else {
+        let start = state.pendingStart;
+        let end = clickedDate;
+        if (end < start) { const t = start; start = end; end = t; }
+        state.pendingStart = null;
+        document.getElementById("rangePicker-" + instanceKey).classList.remove("open");
+        updateRangePickerScrim();
+        onApply("Custom", { start, end });
+      }
+    };
+  });
+}
+
 function getDataByDate() {
   const rows = allData[currentTab] || [];
   const map = {};
@@ -316,42 +452,8 @@ document.getElementById("nextMonth").onclick = () => {
   render();
 };
 
-// ---- EBITDA tile view (with date range picker) ----
-document.getElementById("prevMonthEbitda").onclick = () => {
-  currentMonth--;
-  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-  ebitdaPreset = "This month";
-  ebitdaCustomRange = resolvePreset("This month");
-  // month nav should reflect currentMonth/currentYear directly rather than "today"
-  const start = new Date(currentYear, currentMonth, 1).toISOString().slice(0, 10);
-  const end = new Date(currentYear, currentMonth + 1, 0).toISOString().slice(0, 10);
-  ebitdaCustomRange = { start, end };
-  render();
-};
-
-document.getElementById("nextMonthEbitda").onclick = () => {
-  currentMonth++;
-  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-  ebitdaPreset = "This month";
-  const start = new Date(currentYear, currentMonth, 1).toISOString().slice(0, 10);
-  const end = new Date(currentYear, currentMonth + 1, 0).toISOString().slice(0, 10);
-  ebitdaCustomRange = { start, end };
-  render();
-};
-
-document.getElementById("ebitdaRangeApply").onclick = () => {
-  const start = document.getElementById("ebitdaRangeStart").value;
-  const end = document.getElementById("ebitdaRangeEnd").value;
-  if (!start || !end) return;
-  ebitdaPreset = "Custom";
-  ebitdaCustomRange = { start, end };
-  render();
-};
-
+// ---- EBITDA tile view ----
 function renderEbitda(dateMap) {
-  const monthNavEl = document.getElementById("ebitdaMonthNav");
-  monthNavEl.style.display = "none"; // month nav retired in favor of the preset dropdown + manual range
-
   if (!ebitdaCustomRange) {
     ebitdaCustomRange = resolvePreset(ebitdaPreset, allData[currentTab]);
   }
@@ -559,15 +661,6 @@ function formatMetricValue(key, value) {
   return formatNumber(value);
 }
 
-document.getElementById("metaRangeApply").onclick = () => {
-  const start = document.getElementById("metaRangeStart").value;
-  const end = document.getElementById("metaRangeEnd").value;
-  if (!start || !end) return;
-  metaPreset = "Custom";
-  metaCustomRange = { start, end };
-  render();
-};
-
 function getMetaRows() {
   const rows = allData[currentMetaTab] || [];
   if (!metaCustomRange) {
@@ -738,19 +831,15 @@ function render() {
   const payoutsBrands = getPayoutsBrandNames();
   buildBrandPicker("payouts", payoutsBrands, currentPayoutsTab, (name) => { currentPayoutsTab = name; render(); });
 
-  buildBrandPicker("ebitdaPreset", DATE_PRESETS, ebitdaPreset, (name) => {
-    ebitdaPreset = name;
-    ebitdaCustomRange = null; // force recompute from the newly chosen preset
-    document.getElementById("ebitdaRangeStart").value = "";
-    document.getElementById("ebitdaRangeEnd").value = "";
+  buildRangePicker("ebitda", ebitdaPreset, ebitdaCustomRange, (preset, range) => {
+    ebitdaPreset = preset;
+    ebitdaCustomRange = range;
     render();
   });
 
-  buildBrandPicker("metaPreset", DATE_PRESETS, metaPreset, (name) => {
-    metaPreset = name;
-    metaCustomRange = null;
-    document.getElementById("metaRangeStart").value = "";
-    document.getElementById("metaRangeEnd").value = "";
+  buildRangePicker("meta", metaPreset, metaCustomRange, (preset, range) => {
+    metaPreset = preset;
+    metaCustomRange = range;
     render();
   });
 
