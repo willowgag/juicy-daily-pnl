@@ -10,51 +10,58 @@
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
+  /* Dark theme — black-to-purple gradient, violet accent, lavender/gray pos-neg */
   html[data-theme="dark"] {
-    --bg: #1c1e1a;
-    --panel: #242621;
-    --panel-raised: #2a2c26;
-    --panel-border: #33352e;
-    --text: #c7c5bd;
-    --text-dim: #77756c;
-    --green-bg: #23291f;
-    --green-text: #8ba894;
-    --red-bg: #2b2420;
-    --red-text: #c19073;
-    --neutral-bg: #202220;
-    --accent: #4a6650;
-    --accent-text: #e2e8e0;
-    --modal-overlay: rgba(0,0,0,0.55);
-    --nav-bg: #181a16;
+    --bg: #1a0f2e;
+    --bg-gradient: linear-gradient(180deg, #0a0612 0%, #1a0f2e 50%, #2b1650 100%);
+    --panel: rgba(255,255,255,0.05);
+    --panel-raised: rgba(255,255,255,0.08);
+    --panel-border: rgba(178,143,224,0.22);
+    --text: #e8e4f0;
+    --text-dim: #9d97ae;
+    --pos-bg: rgba(201,184,236,0.14);
+    --pos-text: #c9b8ec;
+    --neg-bg: rgba(130,128,138,0.18);
+    --neg-text: #82808a;
+    --neutral-bg: rgba(255,255,255,0.03);
+    --accent: #a374d6;
+    --accent-text: #170a26;
+    --modal-overlay: rgba(5,2,10,0.7);
+    --nav-bg: #0d0818;
+    --warn-text: #d4b483;
   }
 
+  /* Light theme — cream / near-black text / soft blue accent, exact hex from reference */
   html[data-theme="light"] {
-    --bg: #f2efe6;
-    --panel: #faf8f2;
+    --bg: #D9CCBC;
+    --bg-gradient: none;
+    --panel: #EFE8DE;
     --panel-raised: #ffffff;
-    --panel-border: #e2ddcd;
-    --text: #4a4740;
-    --text-dim: #8f8a7a;
-    --green-bg: #eaf0e9;
-    --green-text: #5f7d68;
-    --red-bg: #f5eae3;
-    --red-text: #b3714f;
-    --neutral-bg: #ece7d9;
-    --accent: #7f9683;
-    --accent-text: #faf8f2;
-    --modal-overlay: rgba(60,55,42,0.35);
-    --nav-bg: #f7f4ec;
+    --panel-border: #c5b8a4;
+    --text: #464542;
+    --text-dim: #7a7568;
+    --pos-bg: #e3ebf7;
+    --pos-text: #3d5a85;
+    --neg-bg: #f0e6d8;
+    --neg-text: #8a6a45;
+    --neutral-bg: #e0d5c4;
+    --accent: #ABC4E9;
+    --accent-text: #1c2a3d;
+    --modal-overlay: rgba(70,69,66,0.35);
+    --nav-bg: #E4D9C9;
+    --warn-text: #8a7a4a;
   }
 
   * { box-sizing: border-box; }
 
   body {
     margin: 0;
-    background: var(--bg);
+    background: var(--bg-gradient) var(--bg);
     color: var(--text);
     font-family: var(--font-body);
     padding: 20px;
     min-height: 100vh;
+    background-attachment: fixed;
     transition: background 0.2s, color 0.2s;
   }
 
@@ -183,7 +190,6 @@
   }
 
   .nav-item:hover { background: var(--panel-border); color: var(--text); }
-
   .nav-item.active { background: var(--accent); color: var(--accent-text); }
 
   .nav-scrim {
@@ -201,11 +207,16 @@
   .view { display: none; }
   .view.active { display: block; }
 
-  .brand-picker {
-    position: relative;
+  .toolbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 18px;
-    width: fit-content;
   }
+
+  .brand-picker { position: relative; width: fit-content; }
 
   .brand-picker-button {
     display: flex;
@@ -223,9 +234,7 @@
   }
 
   .brand-picker-button:hover { border-color: var(--accent); }
-
   .brand-picker-caret { font-size: 10px; color: var(--text-dim); transition: transform 0.15s; }
-
   .brand-picker.open .brand-picker-caret { transform: rotate(180deg); }
 
   .brand-picker-menu {
@@ -237,7 +246,7 @@
     border-radius: 10px;
     padding: 6px;
     min-width: 160px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
     display: none;
     z-index: 50;
   }
@@ -260,8 +269,37 @@
   }
 
   .brand-picker-item:hover { background: var(--neutral-bg); color: var(--text); }
-
   .brand-picker-item.active { background: var(--accent); color: var(--accent-text); }
+
+  .date-range-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .date-range-inline input[type="date"] {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 7px 9px;
+    font-family: var(--font-body);
+    font-size: 12px;
+  }
+
+  .date-range-inline button {
+    background: var(--accent);
+    color: var(--accent-text);
+    border: none;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .date-range-inline .date-sep { font-size: 12px; color: var(--text-dim); }
 
   .summary-bar {
     display: grid;
@@ -296,8 +334,8 @@
     overflow-wrap: break-word;
   }
 
-  .stat-value.pos { color: var(--green-text); }
-  .stat-value.neg { color: var(--red-text); }
+  .stat-value.pos { color: var(--pos-text); }
+  .stat-value.neg { color: var(--neg-text); }
 
   .month-nav {
     display: flex;
@@ -370,15 +408,14 @@
   }
 
   .day:nth-child(7n) { border-right: none; }
-
   .day.empty { background: transparent; cursor: default; }
   .day.no-data { background: var(--neutral-bg); }
-  .day.pos { background: var(--green-bg); }
-  .day.neg { background: var(--red-bg); }
+  .day.pos { background: var(--pos-bg); }
+  .day.neg { background: var(--neg-bg); }
   .day.pos, .day.neg { cursor: pointer; }
-  .day.pos:hover, .day.neg:hover { filter: brightness(0.93); }
+  .day.pos:hover, .day.neg:hover { filter: brightness(1.15); }
   html[data-theme="light"] .day.pos:hover,
-  html[data-theme="light"] .day.neg:hover { filter: brightness(0.96); }
+  html[data-theme="light"] .day.neg:hover { filter: brightness(0.97); }
 
   .day-num { font-size: 11px; color: var(--text-dim); }
 
@@ -391,8 +428,8 @@
     white-space: nowrap;
   }
 
-  .day.pos .day-value { color: var(--green-text); }
-  .day.neg .day-value { color: var(--red-text); }
+  .day.pos .day-value { color: var(--pos-text); }
+  .day.neg .day-value { color: var(--neg-text); }
 
   .day-orders {
     font-size: 10px;
@@ -471,7 +508,7 @@
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 20px 22px;
-    max-width: 340px;
+    max-width: 380px;
     width: 100%;
   }
 
@@ -502,8 +539,8 @@
   .modal-row:last-child { border-bottom: none; }
   .modal-row-label { color: var(--text-dim); }
   .modal-row-value { font-family: var(--font-display); font-weight: 600; text-align: right; }
-  .modal-row-value.pos { color: var(--green-text); }
-  .modal-row-value.neg { color: var(--red-text); }
+  .modal-row-value.pos { color: var(--pos-text); }
+  .modal-row-value.neg { color: var(--neg-text); }
 
   .ebitda-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
@@ -535,8 +572,8 @@
     overflow-wrap: break-word;
   }
 
-  .ebitda-tile-value.pos { color: var(--green-text); }
-  .ebitda-tile-value.neg { color: var(--red-text); }
+  .ebitda-tile-value.pos { color: var(--pos-text); }
+  .ebitda-tile-value.neg { color: var(--neg-text); }
   .ebitda-tile-sub { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
 
   .ebitda-tile.featured {
@@ -549,6 +586,28 @@
   }
 
   .ebitda-tile.featured .ebitda-tile-value { font-size: 34px; }
+
+  /* Meta Ads clickable tiles */
+  .meta-tile {
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+  }
+
+  .meta-tile:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+  .meta-tile-trend {
+    font-size: 11px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .meta-tile-trend.up { color: var(--pos-text); }
+  .meta-tile-trend.down { color: var(--neg-text); }
+
+  .chart-modal-body { padding: 4px 0; }
+  .chart-svg-wrap { width: 100%; overflow: hidden; }
 
   .annual-table-wrap {
     background: var(--panel);
@@ -580,9 +639,8 @@
   }
 
   table.annual-table tr:last-child td { border-bottom: none; }
-
-  td.pos { color: var(--green-text); }
-  td.neg { color: var(--red-text); }
+  td.pos { color: var(--pos-text); }
+  td.neg { color: var(--neg-text); }
 
   footer { margin-top: 20px; text-align: center; font-size: 11px; color: var(--text-dim); }
 
@@ -599,6 +657,9 @@
     .nav-item { font-size: 13px; padding: 9px 10px; }
 
     .brand-picker-button { padding: 8px 12px; font-size: 13px; }
+    .toolbar-row { flex-direction: column; align-items: flex-start; }
+    .date-range-inline input[type="date"] { flex: 1 1 100px; font-size: 11px; padding: 6px; }
+    .date-range-inline button { font-size: 11px; padding: 6px 10px; }
 
     .summary-bar, .range-summary { grid-template-columns: repeat(2, 1fr); gap: 6px; }
     .stat { padding: 9px 10px; }
@@ -645,6 +706,7 @@
   <button class="nav-item" data-view="ebitda">EBITDA</button>
   <button class="nav-item" data-view="annual">Annual</button>
   <button class="nav-item" data-view="payouts">Payouts</button>
+  <button class="nav-item" data-view="metaads">Meta Ads</button>
 </div>
 
 <div class="wrap">
@@ -672,7 +734,7 @@
       <div class="brand-picker-menu" id="brandMenu-calendar"></div>
     </div>
 
-    <div class="summary-bar" id="summary"></div>
+    <div class="summary-bar" id="summary" style="margin-top:16px;"></div>
 
     <div class="month-nav">
       <button id="prevMonth">&#8249;</button>
@@ -701,15 +763,24 @@
   </div>
 
   <div class="view" id="view-ebitda">
-    <div class="brand-picker" id="brandPicker-ebitda">
-      <button class="brand-picker-button" data-menu="ebitda">
-        <span data-label>Blended</span>
-        <span class="brand-picker-caret">&#9662;</span>
-      </button>
-      <div class="brand-picker-menu" id="brandMenu-ebitda"></div>
+    <div class="toolbar-row">
+      <div class="brand-picker" id="brandPicker-ebitda">
+        <button class="brand-picker-button" data-menu="ebitda">
+          <span data-label>Blended</span>
+          <span class="brand-picker-caret">&#9662;</span>
+        </button>
+        <div class="brand-picker-menu" id="brandMenu-ebitda"></div>
+      </div>
+      <div class="date-range-inline">
+        <input type="date" id="ebitdaRangeStart">
+        <span class="date-sep">to</span>
+        <input type="date" id="ebitdaRangeEnd">
+        <button id="ebitdaRangeApply">Apply</button>
+        <button id="ebitdaRangeClear" style="background:var(--panel);color:var(--text);border:1px solid var(--panel-border);">This month</button>
+      </div>
     </div>
 
-    <div class="month-nav">
+    <div class="month-nav" id="ebitdaMonthNav">
       <button id="prevMonthEbitda">&#8249;</button>
       <div class="month-label" id="monthLabelEbitda"></div>
       <button id="nextMonthEbitda">&#8250;</button>
@@ -727,7 +798,7 @@
       <div class="brand-picker-menu" id="brandMenu-annual"></div>
     </div>
 
-    <div class="annual-table-wrap">
+    <div class="annual-table-wrap" style="margin-top:16px;">
       <table class="annual-table" id="annualTable"></table>
     </div>
   </div>
@@ -741,12 +812,33 @@
       <div class="brand-picker-menu" id="brandMenu-payouts"></div>
     </div>
 
-    <div class="summary-bar" id="payoutsSummary" style="grid-template-columns: repeat(2, 1fr); max-width: 480px;"></div>
+    <div class="summary-bar" id="payoutsSummary" style="grid-template-columns: repeat(2, 1fr); max-width: 480px; margin-top:16px;"></div>
 
     <div class="range-panel-title" style="margin-top:24px;">Payout History</div>
     <div class="annual-table-wrap" style="margin-top:12px;">
       <table class="annual-table" id="payoutsHistoryTable"></table>
     </div>
+  </div>
+
+  <div class="view" id="view-metaads">
+    <div class="toolbar-row">
+      <div class="brand-picker" id="brandPicker-metaads">
+        <button class="brand-picker-button" data-menu="metaads">
+          <span data-label>Blended</span>
+          <span class="brand-picker-caret">&#9662;</span>
+        </button>
+        <div class="brand-picker-menu" id="brandMenu-metaads"></div>
+      </div>
+      <div class="date-range-inline">
+        <input type="date" id="metaRangeStart">
+        <span class="date-sep">to</span>
+        <input type="date" id="metaRangeEnd">
+        <button id="metaRangeApply">Apply</button>
+        <button id="metaRangeClear" style="background:var(--panel);color:var(--text);border:1px solid var(--panel-border);">Last 30 days</button>
+      </div>
+    </div>
+
+    <div class="ebitda-grid" id="metaAdsGrid"></div>
   </div>
 
   <footer>Updated automatically once a day from Juicy P&amp;L data</footer>
@@ -762,498 +854,18 @@
   </div>
 </div>
 
-<script>
-let allData = {};
-let currentTab = "Blended";
-let currentPayoutsTab = "Blended";
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-let currentView = "calendar";
-
-const VIEW_LABELS = { calendar: "Calendar", ebitda: "EBITDA", annual: "Annual", payouts: "Payouts" };
-
-function initTheme() {
-  const saved = localStorage.getItem("pnl-theme");
-  const theme = saved || "dark";
-  document.documentElement.setAttribute("data-theme", theme);
-  updateThemeToggleIcon(theme);
-}
-
-function updateThemeToggleIcon(theme) {
-  document.getElementById("themeToggle").textContent = theme === "dark" ? "\u2600" : "\u263D";
-}
-
-document.getElementById("themeToggle").onclick = () => {
-  const current = document.documentElement.getAttribute("data-theme");
-  const next = current === "dark" ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", next);
-  try { localStorage.setItem("pnl-theme", next); } catch (e) {}
-  updateThemeToggleIcon(next);
-};
-
-const navToggle = document.getElementById("navToggle");
-const navScrim = document.getElementById("navScrim");
-
-function closeNav() { document.body.classList.remove("nav-open"); }
-function toggleNav() { document.body.classList.toggle("nav-open"); }
-
-navToggle.onclick = toggleNav;
-navScrim.onclick = closeNav;
-
-document.querySelectorAll(".nav-item").forEach(btn => {
-  btn.onclick = () => {
-    currentView = btn.dataset.view;
-    document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b === btn));
-    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-    document.getElementById("view-" + currentView).classList.add("active");
-    document.getElementById("currentViewLabel").textContent = VIEW_LABELS[currentView];
-    closeNav();
-    render();
-  };
-});
-
-function formatMoney(n) {
-  const sign = n < 0 ? "-" : "";
-  const abs = Math.abs(n);
-  if (abs >= 1000) return sign + "$" + (abs / 1000).toFixed(2) + "K";
-  return sign + "$" + abs.toFixed(2);
-}
-
-function formatMoneyFull(n) {
-  const sign = n < 0 ? "-" : "";
-  return sign + "$" + Math.abs(n).toFixed(2);
-}
-
-function getPnlBrandNames() {
-  const names = Object.keys(allData).filter(k => k !== "Payouts");
-  names.sort((a, b) => (a === "Blended" ? -1 : b === "Blended" ? 1 : 0));
-  return names;
-}
-
-function getPayoutsBrandNames() {
-  const payoutsData = allData["Payouts"] || {};
-  const names = Object.keys(payoutsData);
-  names.sort((a, b) => (a === "Blended" ? -1 : b === "Blended" ? 1 : 0));
-  return names;
-}
-
-function buildBrandPicker(viewKey, names, currentValue, onSelect) {
-  const pickerEl = document.getElementById("brandPicker-" + viewKey);
-  const buttonEl = pickerEl.querySelector(".brand-picker-button");
-  const labelEl = buttonEl.querySelector("[data-label]");
-  const menuEl = document.getElementById("brandMenu-" + viewKey);
-
-  labelEl.textContent = currentValue;
-  menuEl.innerHTML = "";
-
-  names.forEach(name => {
-    const item = document.createElement("button");
-    item.className = "brand-picker-item" + (name === currentValue ? " active" : "");
-    item.textContent = name;
-    item.onclick = () => {
-      onSelect(name);
-      pickerEl.classList.remove("open");
-    };
-    menuEl.appendChild(item);
-  });
-
-  buttonEl.onclick = (e) => {
-    e.stopPropagation();
-    document.querySelectorAll(".brand-picker").forEach(p => {
-      if (p !== pickerEl) p.classList.remove("open");
-    });
-    pickerEl.classList.toggle("open");
-  };
-}
-
-document.addEventListener("click", () => {
-  document.querySelectorAll(".brand-picker").forEach(p => p.classList.remove("open"));
-});
-
-function getDataByDate() {
-  const rows = allData[currentTab] || [];
-  const map = {};
-  rows.forEach(r => { map[r.Date] = r; });
-  return map;
-}
-
-function renderSummary(dateMap) {
-  const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
-  const monthRows = Object.values(dateMap).filter(r => r.Date.startsWith(monthPrefix));
-  renderStatsInto("summary", monthRows, "Net Profit (Month)");
-}
-
-function renderStatsInto(elId, rows, profitLabel) {
-  const totalProfit = rows.reduce((sum, r) => sum + (r.netProfitV2 || 0), 0);
-  const totalRevenue = rows.reduce((sum, r) => sum + (r.netRevenueV2 || 0), 0);
-  const totalOrders = rows.reduce((sum, r) => sum + (r.ordersFloat || 0), 0);
-  const winDays = rows.filter(r => (r.netProfitV2 || 0) > 0).length;
-
-  const el = document.getElementById(elId);
-  el.innerHTML = `
-    <div class="stat">
-      <div class="stat-label">${profitLabel}</div>
-      <div class="stat-value ${totalProfit >= 0 ? "pos" : "neg"}">${formatMoney(totalProfit)}</div>
+<div class="modal-overlay" id="chartModalOverlay">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <div class="modal-date" id="chartModalTitle"></div>
+      <button class="modal-close" id="chartModalClose">&times;</button>
     </div>
-    <div class="stat">
-      <div class="stat-label">Net Revenue</div>
-      <div class="stat-value">${formatMoney(totalRevenue)}</div>
+    <div class="chart-modal-body">
+      <div class="chart-svg-wrap" id="chartSvgWrap"></div>
     </div>
-    <div class="stat">
-      <div class="stat-label">Orders</div>
-      <div class="stat-value">${totalOrders}</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Win Days</div>
-      <div class="stat-value">${winDays} / ${rows.length}</div>
-    </div>
-  `;
-}
+  </div>
+</div>
 
-function renderCalendar(dateMap) {
-  const monthLabel = new Date(currentYear, currentMonth, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
-  document.getElementById("monthLabel").textContent = monthLabel;
-
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-  const gridEl = document.getElementById("grid");
-  gridEl.innerHTML = "";
-
-  for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement("div");
-    empty.className = "day empty";
-    gridEl.appendChild(empty);
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-    const record = dateMap[dateStr];
-    const cell = document.createElement("div");
-
-    if (!record || record.netProfitV2 === undefined || record.netProfitV2 === "") {
-      cell.className = "day no-data";
-      cell.innerHTML = `<div class="day-num">${d}</div>`;
-    } else {
-      const profit = record.netProfitV2;
-      cell.className = "day " + (profit >= 0 ? "pos" : "neg");
-      cell.innerHTML = `
-        <div class="day-num">${d}</div>
-        <div>
-          <div class="day-value">${formatMoney(profit)}</div>
-          <div class="day-orders">${record.ordersFloat || 0} orders</div>
-        </div>
-      `;
-      cell.onclick = () => openDayModal(dateStr, record);
-    }
-    gridEl.appendChild(cell);
-  }
-}
-
-function openDayModal(dateStr, record) {
-  const dateObj = new Date(dateStr + "T00:00:00");
-  const label = dateObj.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
-  document.getElementById("modalDate").textContent = label;
-
-  const revenue = record.netRevenueV2 || 0;
-  const cogs = record.cogsV2 || 0;
-  const adSpend = record.totalAdSpend || 0;
-  const profit = record.netProfitV2 || 0;
-  const grossProfit = record.grossProfitV2 || 0;
-  const orders = record.ordersFloat || 0;
-
-  document.getElementById("modalBody").innerHTML = `
-    <div class="modal-row"><div class="modal-row-label">Net Revenue</div><div class="modal-row-value">${formatMoneyFull(revenue)}</div></div>
-    <div class="modal-row"><div class="modal-row-label">COGS</div><div class="modal-row-value">${formatMoneyFull(cogs)}</div></div>
-    <div class="modal-row"><div class="modal-row-label">Ad Spend</div><div class="modal-row-value">${formatMoneyFull(adSpend)}</div></div>
-    <div class="modal-row"><div class="modal-row-label">Gross Profit</div><div class="modal-row-value">${formatMoneyFull(grossProfit)}</div></div>
-    <div class="modal-row"><div class="modal-row-label">Net Profit</div><div class="modal-row-value ${profit >= 0 ? "pos" : "neg"}">${formatMoneyFull(profit)}</div></div>
-    <div class="modal-row"><div class="modal-row-label">Orders</div><div class="modal-row-value">${orders}</div></div>
-  `;
-
-  document.getElementById("modalOverlay").classList.add("open");
-}
-
-document.getElementById("modalClose").onclick = () => {
-  document.getElementById("modalOverlay").classList.remove("open");
-};
-
-document.getElementById("modalOverlay").onclick = (e) => {
-  if (e.target === e.currentTarget) {
-    document.getElementById("modalOverlay").classList.remove("open");
-  }
-};
-
-document.getElementById("rangeApply").onclick = () => {
-  const start = document.getElementById("rangeStart").value;
-  const end = document.getElementById("rangeEnd").value;
-  if (!start || !end) return;
-
-  const dateMap = getDataByDate();
-  const rows = Object.values(dateMap).filter(r => r.Date >= start && r.Date <= end);
-  renderStatsInto("rangeSummary", rows, "Net Profit (Range)");
-};
-
-document.getElementById("prevMonth").onclick = () => {
-  currentMonth--;
-  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-  render();
-};
-
-document.getElementById("nextMonth").onclick = () => {
-  currentMonth++;
-  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-  render();
-};
-
-document.getElementById("prevMonthEbitda").onclick = () => {
-  currentMonth--;
-  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-  render();
-};
-
-document.getElementById("nextMonthEbitda").onclick = () => {
-  currentMonth++;
-  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-  render();
-};
-
-function renderEbitda(dateMap) {
-  const monthLabel = new Date(currentYear, currentMonth, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
-  document.getElementById("monthLabelEbitda").textContent = monthLabel;
-
-  const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
-  const rows = Object.values(dateMap).filter(r => r.Date.startsWith(monthPrefix));
-
-  const gridEl = document.getElementById("waterfall");
-  if (rows.length === 0) {
-    gridEl.innerHTML = `<div style="padding:20px;color:var(--text-dim);font-size:13px;grid-column:1/-1;">No data for this month yet.</div>`;
-    return;
-  }
-
-  const revenue = rows.reduce((s, r) => s + (r.netRevenueV2 || 0), 0);
-  const cogs = rows.reduce((s, r) => s + (r.cogsV2 || 0), 0);
-  const adSpend = rows.reduce((s, r) => s + (r.totalAdSpend || 0), 0);
-  const grossProfit = rows.reduce((s, r) => s + (r.grossProfitV2 || 0), 0);
-  const netProfit = rows.reduce((s, r) => s + (r.netProfitV2 || 0), 0);
-  const orders = rows.reduce((s, r) => s + (r.ordersFloat || 0), 0);
-
-  const margin = revenue ? (netProfit / revenue) * 100 : 0;
-  const cogsPct = revenue ? (cogs / revenue) * 100 : 0;
-  const adSpendPct = revenue ? (adSpend / revenue) * 100 : 0;
-  const aov = orders ? revenue / orders : 0;
-
-  const tiles = [
-    { label: "Net Profit", value: formatMoneyFull(netProfit), sub: `${margin.toFixed(1)}% margin`, colorClass: netProfit >= 0 ? "pos" : "neg", dotColor: "var(--green-text)", featured: true },
-    { label: "Revenue", value: formatMoneyFull(revenue), sub: `${orders} orders`, colorClass: "", dotColor: "var(--accent)" },
-    { label: "COGS", value: formatMoneyFull(cogs), sub: `${cogsPct.toFixed(1)}% of revenue`, colorClass: "", dotColor: "var(--red-text)" },
-    { label: "Ad Spend", value: formatMoneyFull(adSpend), sub: `${adSpendPct.toFixed(1)}% of revenue`, colorClass: "", dotColor: "var(--red-text)" },
-    { label: "Gross Profit", value: formatMoneyFull(grossProfit), sub: revenue ? `${((grossProfit / revenue) * 100).toFixed(1)}% margin` : "", colorClass: grossProfit >= 0 ? "pos" : "neg", dotColor: "var(--green-text)" },
-    { label: "AOV", value: formatMoneyFull(aov), sub: "avg order value", colorClass: "", dotColor: "var(--accent)" },
-  ];
-
-  gridEl.innerHTML = tiles.map(t => `
-    <div class="ebitda-tile${t.featured ? ' featured' : ''}">
-      <div>
-        <div class="ebitda-tile-label"><span class="ebitda-tile-icon" style="background:${t.dotColor}"></span>${t.label}</div>
-        <div class="ebitda-tile-value ${t.colorClass}">${t.value}</div>
-      </div>
-      <div class="ebitda-tile-sub">${t.sub}</div>
-    </div>
-  `).join("");
-}
-
-function renderAnnual(dateMap) {
-  const rowsByYear = {};
-  Object.values(dateMap).forEach(r => {
-    const year = r.Date.slice(0, 4);
-    if (!rowsByYear[year]) rowsByYear[year] = [];
-    rowsByYear[year].push(r);
-  });
-
-  const years = Object.keys(rowsByYear).sort().reverse();
-  const tableEl = document.getElementById("annualTable");
-
-  if (years.length === 0) {
-    tableEl.innerHTML = `<tr><td style="padding:20px;color:var(--text-dim);">No data yet.</td></tr>`;
-    return;
-  }
-
-  let html = `
-    <thead>
-      <tr>
-        <th>Year</th>
-        <th>Revenue</th>
-        <th>COGS</th>
-        <th>Ad Spend</th>
-        <th>Net Profit</th>
-        <th>Net Margin</th>
-        <th>Orders</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-
-  years.forEach(year => {
-    const rows = rowsByYear[year];
-    const revenue = rows.reduce((s, r) => s + (r.netRevenueV2 || 0), 0);
-    const cogs = rows.reduce((s, r) => s + (r.cogsV2 || 0), 0);
-    const adSpend = rows.reduce((s, r) => s + (r.totalAdSpend || 0), 0);
-    const netProfit = rows.reduce((s, r) => s + (r.netProfitV2 || 0), 0);
-    const orders = rows.reduce((s, r) => s + (r.ordersFloat || 0), 0);
-    const margin = revenue ? (netProfit / revenue) * 100 : 0;
-
-    html += `
-      <tr>
-        <td>${year}</td>
-        <td>${formatMoneyFull(revenue)}</td>
-        <td>${formatMoneyFull(cogs)}</td>
-        <td>${formatMoneyFull(adSpend)}</td>
-        <td class="${netProfit >= 0 ? 'pos' : 'neg'}">${formatMoneyFull(netProfit)}</td>
-        <td class="${margin >= 0 ? 'pos' : 'neg'}">${margin.toFixed(1)}%</td>
-        <td>${orders}</td>
-      </tr>
-    `;
-  });
-
-  html += "</tbody>";
-  tableEl.innerHTML = html;
-}
-
-function renderPayouts() {
-  const payoutsData = allData["Payouts"] || {};
-  const record = payoutsData[currentPayoutsTab];
-  const el = document.getElementById("payoutsSummary");
-
-  if (!record) {
-    el.innerHTML = `<div style="padding:20px;color:var(--text-dim);grid-column:1/-1;">No payout data yet for ${currentPayoutsTab}.</div>`;
-    document.getElementById("payoutsHistoryTable").innerHTML = "";
-    return;
-  }
-
-  const balance = record.Balance || 0;
-  const nextAmount = record.NextPayoutAmount || 0;
-  const nextDate = record.NextPayoutDate || "";
-  const nextDateLabel = nextDate
-    ? new Date(nextDate + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
-    : "None scheduled";
-
-  el.innerHTML = `
-    <div class="stat">
-      <div class="stat-label">Available balance</div>
-      <div class="stat-value pos">${formatMoneyFull(balance)}</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Next payout</div>
-      <div class="stat-value">${nextAmount ? formatMoneyFull(nextAmount) : "—"}</div>
-      <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">${nextDateLabel}</div>
-    </div>
-  `;
-
-  renderPayoutsHistory(record.Payouts || []);
-}
-
-function statusPill(status) {
-  const map = {
-    SCHEDULED: { label: "Scheduled", color: "var(--text-dim)", bg: "var(--neutral-bg)" },
-    IN_TRANSIT: { label: "In transit", color: "var(--text-dim)", bg: "var(--neutral-bg)" },
-    PAID: { label: "Deposited", color: "var(--green-text)", bg: "var(--green-bg)" },
-    FAILED: { label: "Failed", color: "var(--red-text)", bg: "var(--red-bg)" },
-    CANCELLED: { label: "Cancelled", color: "var(--red-text)", bg: "var(--red-bg)" },
-  };
-  const s = map[status] || { label: status || "—", color: "var(--text-dim)", bg: "var(--neutral-bg)" };
-  return `<span style="background:${s.bg};color:${s.color};font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;white-space:nowrap;">${s.label}</span>`;
-}
-
-function renderPayoutsHistory(payouts) {
-  const tableEl = document.getElementById("payoutsHistoryTable");
-  const showBrandColumn = currentPayoutsTab === "Blended";
-
-  if (!payouts.length) {
-    tableEl.innerHTML = `<tr><td style="padding:20px;color:var(--text-dim);">No payouts recorded yet.</td></tr>`;
-    return;
-  }
-
-  const sorted = [...payouts].sort((a, b) => (a.Date < b.Date ? 1 : -1));
-
-  let html = `
-    <thead>
-      <tr>
-        <th>Payout date</th>
-        ${showBrandColumn ? "<th>Brand</th>" : ""}
-        <th>Status</th>
-        <th>Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-
-  sorted.forEach(p => {
-    const dateLabel = new Date(p.Date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    html += `
-      <tr>
-        <td style="text-align:left;">${dateLabel}</td>
-        ${showBrandColumn ? `<td style="text-align:left;">${p.Brand}</td>` : ""}
-        <td>${statusPill(p.Status)}</td>
-        <td>${formatMoneyFull(p.Amount || 0)}</td>
-      </tr>
-    `;
-  });
-
-  html += "</tbody>";
-  tableEl.innerHTML = html;
-}
-
-function render() {
-  const pnlBrands = getPnlBrandNames();
-  buildBrandPicker("calendar", pnlBrands, currentTab, (name) => { currentTab = name; render(); });
-  buildBrandPicker("ebitda", pnlBrands, currentTab, (name) => { currentTab = name; render(); });
-  buildBrandPicker("annual", pnlBrands, currentTab, (name) => { currentTab = name; render(); });
-
-  const payoutsBrands = getPayoutsBrandNames();
-  buildBrandPicker("payouts", payoutsBrands, currentPayoutsTab, (name) => { currentPayoutsTab = name; render(); });
-
-  const dateMap = getDataByDate();
-
-  if (currentView === "calendar") {
-    renderSummary(dateMap);
-    renderCalendar(dateMap);
-    const start = document.getElementById("rangeStart").value;
-    const end = document.getElementById("rangeEnd").value;
-    if (start && end) {
-      const rows = Object.values(dateMap).filter(r => r.Date >= start && r.Date <= end);
-      renderStatsInto("rangeSummary", rows, "Net Profit (Range)");
-    } else {
-      document.getElementById("rangeSummary").innerHTML = "";
-    }
-  } else if (currentView === "ebitda") {
-    renderEbitda(dateMap);
-  } else if (currentView === "annual") {
-    renderAnnual(dateMap);
-  } else if (currentView === "payouts") {
-    renderPayouts();
-  }
-}
-
-initTheme();
-
-fetch("data.json")
-  .then(res => res.json())
-  .then(data => {
-    allData = data;
-    const blended = allData["Blended"] || [];
-    if (blended.length > 0) {
-      const dates = blended.map(r => r.Date).filter(Boolean).sort();
-      const lastDateStr = dates[dates.length - 1];
-      const [y, m] = lastDateStr.split("-").map(Number);
-      currentYear = y;
-      currentMonth = m - 1;
-    }
-    render();
-  })
-  .catch(err => {
-    document.getElementById("grid").innerHTML = `<div style="padding:24px;color:var(--text-dim);grid-column:1/-1;">Couldn't load data.json — ${err}</div>`;
-  });
-</script>
+<script src="dashboard.js"></script>
 </body>
 </html>
