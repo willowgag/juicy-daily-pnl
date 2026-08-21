@@ -317,6 +317,141 @@
 
   .date-range-inline .date-sep { font-size: 12px; color: var(--text-dim); }
 
+  /* Single-window calendar range picker: click a start day, click an end day */
+  .range-picker { position: relative; width: fit-content; }
+
+  .range-picker-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .range-picker-button:hover { border-color: var(--accent); }
+
+  .range-picker-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: var(--panel-solid);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 14px;
+    width: 280px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    display: none;
+    z-index: 250;
+  }
+
+  .range-picker.open .range-picker-popover { display: block; }
+
+  .range-picker-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  .range-picker-preset {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 9px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+
+  .range-picker-preset:hover { color: var(--text); border-color: var(--accent); }
+  .range-picker-preset.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+
+  .range-picker-month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .range-picker-month-nav button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 6px;
+  }
+
+  .range-picker-month-nav button:hover { color: var(--text); }
+  .range-picker-month-label { font-size: 12px; font-weight: 600; }
+
+  .range-picker-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 4px;
+  }
+
+  .range-picker-weekdays div {
+    text-align: center;
+    font-size: 9px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .range-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .range-picker-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text);
+    background: transparent;
+    border: none;
+  }
+
+  .range-picker-day:hover { background: var(--neutral-bg); }
+  .range-picker-day.empty { cursor: default; visibility: hidden; }
+  .range-picker-day.in-range { background: var(--pos-bg); border-radius: 0; }
+  .range-picker-day.range-start,
+  .range-picker-day.range-end {
+    background: var(--accent);
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+  .range-picker-day.range-start { border-radius: 6px 0 0 6px; }
+  .range-picker-day.range-end { border-radius: 0 6px 6px 0; }
+  .range-picker-day.range-start.range-end { border-radius: 6px; }
+
+  #rangePickerScrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 240;
+  }
+
+  #rangePickerScrim.active { opacity: 1; pointer-events: auto; }
+
   .summary-bar {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -718,6 +853,7 @@
 <body>
 <div class="nav-scrim" id="navScrim"></div>
 <div id="brandPickerScrim"></div>
+<div id="rangePickerScrim"></div>
 <div class="nav-panel" id="navPanel">
   <div class="nav-panel-title">Views</div>
   <button class="nav-item active" data-view="calendar">Calendar</button>
@@ -789,25 +925,13 @@
         </button>
         <div class="brand-picker-menu" id="brandMenu-ebitda"></div>
       </div>
-      <div class="date-range-inline">
-        <div class="brand-picker" id="brandPicker-ebitdaPreset">
-          <button class="brand-picker-button" data-menu="ebitdaPreset">
-            <span data-label>This month</span>
-            <span class="brand-picker-caret">&#9662;</span>
-          </button>
-          <div class="brand-picker-menu" id="brandMenu-ebitdaPreset"></div>
-        </div>
-        <input type="date" id="ebitdaRangeStart">
-        <span class="date-sep">to</span>
-        <input type="date" id="ebitdaRangeEnd">
-        <button id="ebitdaRangeApply">Apply</button>
+      <div class="range-picker" id="rangePicker-ebitda">
+        <button class="range-picker-button">
+          <span data-label>This month</span>
+          <span class="brand-picker-caret">&#9662;</span>
+        </button>
+        <div class="range-picker-popover" id="rangePopover-ebitda"></div>
       </div>
-    </div>
-
-    <div class="month-nav" id="ebitdaMonthNav">
-      <button id="prevMonthEbitda">&#8249;</button>
-      <div class="month-label" id="monthLabelEbitda"></div>
-      <button id="nextMonthEbitda">&#8250;</button>
     </div>
 
     <div class="ebitda-grid" id="waterfall"></div>
@@ -853,18 +977,12 @@
         </button>
         <div class="brand-picker-menu" id="brandMenu-metaads"></div>
       </div>
-      <div class="date-range-inline">
-        <div class="brand-picker" id="brandPicker-metaPreset">
-          <button class="brand-picker-button" data-menu="metaPreset">
-            <span data-label>Last 30 days</span>
-            <span class="brand-picker-caret">&#9662;</span>
-          </button>
-          <div class="brand-picker-menu" id="brandMenu-metaPreset"></div>
-        </div>
-        <input type="date" id="metaRangeStart">
-        <span class="date-sep">to</span>
-        <input type="date" id="metaRangeEnd">
-        <button id="metaRangeApply">Apply</button>
+      <div class="range-picker" id="rangePicker-meta">
+        <button class="range-picker-button">
+          <span data-label>Last 30 days</span>
+          <span class="brand-picker-caret">&#9662;</span>
+        </button>
+        <div class="range-picker-popover" id="rangePopover-meta"></div>
       </div>
     </div>
 
