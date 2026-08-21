@@ -754,7 +754,8 @@ function buildLineChartSvg(points, metricKey) {
   const coords = points.map((p, i) => {
     const x = padding.left + i * xStep;
     const y = padding.top + chartH - ((p.value - minV) / range) * chartH;
-    return { x, y, ...p };
+    const dateLabel = new Date(p.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return { x, y, ...p, dateLabel };
   });
 
   const linePath = coords.map((c, i) => (i === 0 ? "M" : "L") + c.x.toFixed(1) + "," + c.y.toFixed(1)).join(" ");
@@ -765,13 +766,12 @@ function buildLineChartSvg(points, metricKey) {
 
   const dots = coords.map(c => `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="2.5" fill="var(--accent)" />`).join("");
 
-  // Invisible larger hit targets per point, each carrying its data via data-* attrs
-  // for the shared mousemove handler to read and position a tooltip against.
-  const hitTargets = coords.map((c, i) => {
-    const dateLabel = new Date(c.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    const valueLabel = formatMetricValue(metricKey, c.value);
-    return `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="10" fill="transparent" class="chart-hit" data-date="${dateLabel}" data-value="${valueLabel}" />`;
-  }).join("");
+  // Stash coords + metricKey on window for the tracking handler to read - simplest
+  // way to pass this data across without threading it through more parameters.
+  window.__chartCoords = coords;
+  window.__chartMetricKey = metricKey;
+  window.__chartPadding = padding;
+  window.__chartDims = { width, height, chartW, chartH };
 
   return `
     <div id="chartTooltip" style="position:absolute;display:none;background:var(--panel-solid);border:1px solid var(--panel-border);border-radius:8px;padding:6px 10px;font-size:12px;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.25);z-index:10;white-space:nowrap;"></div>
@@ -781,11 +781,13 @@ function buildLineChartSvg(points, metricKey) {
       <path d="${areaPath}" fill="var(--accent)" opacity="0.12" />
       <path d="${linePath}" fill="none" stroke="var(--accent)" stroke-width="2" />
       ${dots}
+      <line id="chartGuideLine" x1="0" y1="${padding.top}" x2="0" y2="${padding.top + chartH}" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3,3" opacity="0" />
+      <circle id="chartGuideDot" r="4" fill="var(--accent)" opacity="0" />
       <text x="${padding.left}" y="${height - 6}" fill="var(--text-dim)" font-size="10">${firstLabel}</text>
       <text x="${width - padding.right}" y="${height - 6}" fill="var(--text-dim)" font-size="10" text-anchor="end">${lastLabel}</text>
       <text x="${padding.left - 6}" y="${padding.top + 4}" fill="var(--text-dim)" font-size="10" text-anchor="end">${formatMetricValue(metricKey, Math.max(...points.map(p => p.value)))}</text>
       <text x="${padding.left - 6}" y="${padding.top + chartH}" fill="var(--text-dim)" font-size="10" text-anchor="end">${formatMetricValue(metricKey, Math.min(...points.map(p => p.value)))}</text>
-      ${hitTargets}
+      <rect id="chartTrackArea" x="${padding.left}" y="0" width="${chartW}" height="${height}" fill="transparent" style="cursor:crosshair;" />
     </svg>
   `;
 }
@@ -793,22 +795,58 @@ function buildLineChartSvg(points, metricKey) {
 function wireChartTooltip() {
   const svgEl = document.getElementById("chartSvg");
   const tooltipEl = document.getElementById("chartTooltip");
-  if (!svgEl || !tooltipEl) return;
+  const trackEl = document.getElementById("chartTrackArea");
+  const guideLineEl = document.getElementById("chartGuideLine");
+  const guideDotEl = document.getElementById("chartGuideDot");
+  if (!svgEl || !tooltipEl || !trackEl) return;
 
-  svgEl.querySelectorAll(".chart-hit").forEach(hit => {
-    hit.addEventListener("mouseenter", (e) => {
-      tooltipEl.textContent = `${hit.dataset.date} — ${hit.dataset.value}`;
-      tooltipEl.style.display = "block";
+  const coords = window.__chartCoords;
+  const metricKey = window.__chartMetricKey;
+  const { width } = window.__chartDims;
+
+  function showAtIndex(idx, clientX, clientY) {
+    const c = coords[idx];
+    guideLineEl.setAttribute("x1", c.x);
+    guideLineEl.setAttribute("x2", c.x);
+    guideLineEl.setAttribute("opacity", "1");
+    guideDotEl.setAttribute("cx", c.x);
+    guideDotEl.setAttribute("cy", c.y);
+    guideDotEl.setAttribute("opacity", "1");
+
+    tooltipEl.textContent = `${c.dateLabel} — ${formatMetricValue(metricKey, c.value)}`;
+    tooltipEl.style.display = "block";
+
+    const wrapRect = document.getElementById("chartSvgWrap").getBoundingClientRect();
+    tooltipEl.style.left = (clientX - wrapRect.left + 12) + "px";
+    tooltipEl.style.top = (clientY - wrapRect.top - 28) + "px";
+  }
+
+  function hide() {
+    guideLineEl.setAttribute("opacity", "0");
+    guideDotEl.setAttribute("opacity", "0");
+    tooltipEl.style.display = "none";
+  }
+
+  trackEl.addEventListener("mousemove", (e) => {
+    // Convert mouse position to SVG viewBox coordinates, since the SVG scales
+    // responsively (width: 100%) and doesn't map 1:1 to screen pixels.
+    const svgRect = svgEl.getBoundingClientRect();
+    const scaleX = width / svgRect.width;
+    const mouseXInSvg = (e.clientX - svgRect.left) * scaleX;
+
+    // Find whichever data point is closest on the x-axis to the cursor,
+    // regardless of how close the cursor is vertically to the line itself.
+    let closestIdx = 0;
+    let closestDist = Infinity;
+    coords.forEach((c, i) => {
+      const dist = Math.abs(c.x - mouseXInSvg);
+      if (dist < closestDist) { closestDist = dist; closestIdx = i; }
     });
-    hit.addEventListener("mousemove", (e) => {
-      const wrapRect = document.getElementById("chartSvgWrap").getBoundingClientRect();
-      tooltipEl.style.left = (e.clientX - wrapRect.left + 12) + "px";
-      tooltipEl.style.top = (e.clientY - wrapRect.top - 28) + "px";
-    });
-    hit.addEventListener("mouseleave", () => {
-      tooltipEl.style.display = "none";
-    });
+
+    showAtIndex(closestIdx, e.clientX, e.clientY);
   });
+
+  trackEl.addEventListener("mouseleave", hide);
 }
 
 
