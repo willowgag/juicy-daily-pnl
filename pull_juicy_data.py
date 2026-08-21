@@ -51,11 +51,21 @@ METRICS = [
     "netMarginV2",
     "ordersFloat",
     "breakEvenRoasV2",
+    "facebookImpressions",
+    "facebookReach",
+    "facebookFrequency",
+    "facebookClicks",
+    "facebookCtr",
+    "facebookCpc",
+    "facebookCpm",
+    "facebookRoas",
+    "facebookOrdersFloat",
+    "facebookCpoFloat",
 ]
 
 # Metrics that should NOT be summed across brands in the Blended tab -
 # they're recalculated from other (summed) values instead.
-RATIO_METRICS = {"grossMarginV2", "netMarginV2", "breakEvenRoasV2"}
+RATIO_METRICS = {"grossMarginV2", "netMarginV2", "breakEvenRoasV2", "facebookCtr", "facebookCpc", "facebookCpm", "facebookRoas", "facebookCpoFloat", "facebookFrequency"}
 
 SHEET_HEADER = ["Date"] + METRICS
 
@@ -165,6 +175,25 @@ def compute_blended_totals(brand_rows):
     totals["netMarginV2"] = round((net_profit / net_revenue) * 100, 2) if net_revenue else ""
     break_even_denominator = net_revenue - cogs - transaction_fees
     totals["breakEvenRoasV2"] = round(net_revenue / break_even_denominator, 2) if break_even_denominator else ""
+
+    # Facebook rate metrics recalculated from underlying totals rather than averaged,
+    # for accuracy (e.g. CTR = total clicks / total impressions, not avg of per-brand CTRs)
+    fb_impressions = totals.get("facebookImpressions") or 0
+    fb_clicks = totals.get("facebookClicks") or 0
+    fb_spend = totals.get("facebookAdSpend") or 0
+    fb_orders = totals.get("facebookOrdersFloat") or 0
+
+    totals["facebookCtr"] = round((fb_clicks / fb_impressions) * 100, 2) if fb_impressions else ""
+    totals["facebookCpc"] = round(fb_spend / fb_clicks, 2) if fb_clicks else ""
+    totals["facebookCpm"] = round((fb_spend / fb_impressions) * 1000, 2) if fb_impressions else ""
+    totals["facebookCpoFloat"] = round(fb_spend / fb_orders, 2) if fb_orders else ""
+    # ROAS and Frequency don't have a clean underlying-totals recomputation available
+    # here (ROAS needs attributed revenue, Frequency needs reach); average across
+    # brands that reported a value as a reasonable approximation for Blended.
+    fb_roas_values = [row[METRICS.index("facebookRoas") + 1] for row in brand_rows if row[METRICS.index("facebookRoas") + 1] not in (None, "")]
+    totals["facebookRoas"] = round(sum(fb_roas_values) / len(fb_roas_values), 2) if fb_roas_values else ""
+    fb_freq_values = [row[METRICS.index("facebookFrequency") + 1] for row in brand_rows if row[METRICS.index("facebookFrequency") + 1] not in (None, "")]
+    totals["facebookFrequency"] = round(sum(fb_freq_values) / len(fb_freq_values), 2) if fb_freq_values else ""
 
     return totals
 
