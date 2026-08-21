@@ -102,6 +102,20 @@ def compute_blended_row(date_str, brand_rows):
     break_even_denominator = net_revenue - cogs - transaction_fees
     totals["breakEvenRoasV2"] = round(net_revenue / break_even_denominator, 2) if break_even_denominator else ""
 
+    fb_impressions = totals.get("facebookImpressions") or 0
+    fb_clicks = totals.get("facebookClicks") or 0
+    fb_spend = totals.get("facebookAdSpend") or 0
+    fb_orders = totals.get("facebookOrdersFloat") or 0
+
+    totals["facebookCtr"] = round((fb_clicks / fb_impressions) * 100, 2) if fb_impressions else ""
+    totals["facebookCpc"] = round(fb_spend / fb_clicks, 2) if fb_clicks else ""
+    totals["facebookCpm"] = round((fb_spend / fb_impressions) * 1000, 2) if fb_impressions else ""
+    totals["facebookCpoFloat"] = round(fb_spend / fb_orders, 2) if fb_orders else ""
+    fb_roas_values = [row[METRICS.index("facebookRoas") + 1] for row in brand_rows if row[METRICS.index("facebookRoas") + 1] not in (None, "")]
+    totals["facebookRoas"] = round(sum(fb_roas_values) / len(fb_roas_values), 2) if fb_roas_values else ""
+    fb_freq_values = [row[METRICS.index("facebookFrequency") + 1] for row in brand_rows if row[METRICS.index("facebookFrequency") + 1] not in (None, "")]
+    totals["facebookFrequency"] = round(sum(fb_freq_values) / len(fb_freq_values), 2) if fb_freq_values else ""
+
     return [date_str] + [
         totals[metric_key] if totals[metric_key] not in (None,) else ""
         for metric_key in METRICS
