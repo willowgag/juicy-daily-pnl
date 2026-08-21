@@ -15,20 +15,21 @@
     --bg: #1a0f2e;
     --bg-gradient: linear-gradient(180deg, #0a0612 0%, #1a0f2e 50%, #2b1650 100%);
     --panel: rgba(255,255,255,0.05);
-    --panel-raised: rgba(255,255,255,0.08);
+    --panel-raised: rgba(255,255,255,0.12);
     --panel-border: rgba(178,143,224,0.22);
     --text: #e8e4f0;
     --text-dim: #9d97ae;
-    --pos-bg: rgba(201,184,236,0.14);
-    --pos-text: #c9b8ec;
-    --neg-bg: rgba(130,128,138,0.18);
-    --neg-text: #82808a;
+    --pos-bg: rgba(144,120,196,0.16);
+    --pos-text: #9078C4;
+    --neg-bg: rgba(156,148,175,0.18);
+    --neg-text: #9C94AF;
     --neutral-bg: rgba(255,255,255,0.03);
     --accent: #a374d6;
     --accent-text: #170a26;
     --modal-overlay: rgba(5,2,10,0.7);
     --nav-bg: #0d0818;
     --warn-text: #d4b483;
+    --panel-solid: #221640;
   }
 
   /* Light theme — cream / near-black text / soft blue accent, exact hex from reference */
@@ -40,16 +41,17 @@
     --panel-border: #c5b8a4;
     --text: #464542;
     --text-dim: #7a7568;
-    --pos-bg: #e3ebf7;
-    --pos-text: #3d5a85;
-    --neg-bg: #f0e6d8;
-    --neg-text: #8a6a45;
+    --pos-bg: #e8e2f2;
+    --pos-text: #6a4fa0;
+    --neg-bg: #e3e0e8;
+    --neg-text: #6b6478;
     --neutral-bg: #e0d5c4;
     --accent: #ABC4E9;
     --accent-text: #1c2a3d;
     --modal-overlay: rgba(70,69,66,0.35);
     --nav-bg: #E4D9C9;
     --warn-text: #8a7a4a;
+    --panel-solid: #ffffff;
   }
 
   * { box-sizing: border-box; }
@@ -246,12 +248,26 @@
     border-radius: 10px;
     padding: 6px;
     min-width: 160px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
     display: none;
-    z-index: 50;
+    z-index: 250;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .brand-picker.open .brand-picker-menu { display: block; }
+
+  #brandPickerScrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 240;
+  }
+
+  #brandPickerScrim.active { opacity: 1; pointer-events: auto; }
 
   .brand-picker-item {
     display: block;
@@ -607,7 +623,8 @@
   .meta-tile-trend.down { color: var(--neg-text); }
 
   .chart-modal-body { padding: 4px 0; }
-  .chart-svg-wrap { width: 100%; overflow: hidden; }
+  .chart-modal { background: var(--panel-solid); }
+  .chart-svg-wrap { width: 100%; overflow: visible; position: relative; }
 
   .annual-table-wrap {
     background: var(--panel);
@@ -700,6 +717,7 @@
 </head>
 <body>
 <div class="nav-scrim" id="navScrim"></div>
+<div id="brandPickerScrim"></div>
 <div class="nav-panel" id="navPanel">
   <div class="nav-panel-title">Views</div>
   <button class="nav-item active" data-view="calendar">Calendar</button>
@@ -772,11 +790,17 @@
         <div class="brand-picker-menu" id="brandMenu-ebitda"></div>
       </div>
       <div class="date-range-inline">
+        <div class="brand-picker" id="brandPicker-ebitdaPreset">
+          <button class="brand-picker-button" data-menu="ebitdaPreset">
+            <span data-label>This month</span>
+            <span class="brand-picker-caret">&#9662;</span>
+          </button>
+          <div class="brand-picker-menu" id="brandMenu-ebitdaPreset"></div>
+        </div>
         <input type="date" id="ebitdaRangeStart">
         <span class="date-sep">to</span>
         <input type="date" id="ebitdaRangeEnd">
         <button id="ebitdaRangeApply">Apply</button>
-        <button id="ebitdaRangeClear" style="background:var(--panel);color:var(--text);border:1px solid var(--panel-border);">This month</button>
       </div>
     </div>
 
@@ -830,11 +854,17 @@
         <div class="brand-picker-menu" id="brandMenu-metaads"></div>
       </div>
       <div class="date-range-inline">
+        <div class="brand-picker" id="brandPicker-metaPreset">
+          <button class="brand-picker-button" data-menu="metaPreset">
+            <span data-label>Last 30 days</span>
+            <span class="brand-picker-caret">&#9662;</span>
+          </button>
+          <div class="brand-picker-menu" id="brandMenu-metaPreset"></div>
+        </div>
         <input type="date" id="metaRangeStart">
         <span class="date-sep">to</span>
         <input type="date" id="metaRangeEnd">
         <button id="metaRangeApply">Apply</button>
-        <button id="metaRangeClear" style="background:var(--panel);color:var(--text);border:1px solid var(--panel-border);">Last 30 days</button>
       </div>
     </div>
 
@@ -855,7 +885,7 @@
 </div>
 
 <div class="modal-overlay" id="chartModalOverlay">
-  <div class="modal" style="max-width:560px;">
+  <div class="modal chart-modal" style="max-width:560px;">
     <div class="modal-header">
       <div class="modal-date" id="chartModalTitle"></div>
       <button class="modal-close" id="chartModalClose">&times;</button>
