@@ -18,6 +18,7 @@ import json
 import datetime
 import requests
 import gspread
+from zoneinfo import ZoneInfo
 from google.oauth2.service_account import Credentials
 
 # ---- Config ----
@@ -344,7 +345,25 @@ def get_month_to_date_profit(sheet, date_str):
     return total
 
 
+def is_near_quebec_midnight(tolerance_minutes=20):
+    """Two cron triggers fire daily (one tuned for EDT, one for EST) since GitHub
+    Actions cron can't itself account for DST. This checks the real, DST-aware
+    Quebec local time and only allows the run through if it's genuinely close to
+    midnight - so whichever trigger fires "on time" for the current season does
+    the real work, and the other one exits immediately without duplicating it."""
+    now_quebec = datetime.datetime.now(ZoneInfo("America/Toronto"))
+    minutes_since_midnight = now_quebec.hour * 60 + now_quebec.minute
+    minutes_until_midnight = (24 * 60) - minutes_since_midnight
+    return min(minutes_since_midnight, minutes_until_midnight) <= tolerance_minutes
+
+
 def main():
+    is_manual_run = os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+    if not is_manual_run and not is_near_quebec_midnight():
+        print("Not close to Quebec midnight right now - this is the off-season "
+              "cron trigger, skipping (the other trigger handles today's run).")
+        return
+
     google_creds_json = os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"]
     sheet_id = os.environ["GOOGLE_SHEET_ID"]
 
