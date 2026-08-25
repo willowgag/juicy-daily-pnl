@@ -2,10 +2,10 @@ name: Daily Juicy P&L Pull
 
 on:
   schedule:
-    # Runs at 5:00 AM UTC daily = midnight in Quebec (EDT, summer) / 1:00 AM Quebec (EST, winter)
-    # A single fixed cron can't hit exactly midnight in both DST seasons, so this is the
-    # closest maintenance-free option: never early, up to 1hr late during EST months.
-    - cron: "0 5 * * *"
+    # EDT (summer, ~mid-Mar to early Nov): 4:01 AM UTC = 12:01 AM Quebec
+    - cron: "1 4 * * *"
+    # EST (winter, ~early Nov to mid-Mar): 5:01 AM UTC = 12:01 AM Quebec
+    - cron: "1 5 * * *"
   workflow_dispatch: {} # allows manual triggering from the GitHub Actions tab
 
 jobs:
