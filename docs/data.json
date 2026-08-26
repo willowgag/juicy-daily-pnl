@@ -5863,7 +5863,7 @@
   ],
   "Payouts": {
     "Lymphea": {
-      "Balance": 4936.94,
+      "Balance": 5565.39,
       "Currency": "CAD",
       "NextPayoutDate": "2026-08-24",
       "NextPayoutAmount": 615.11,
@@ -5983,16 +5983,24 @@
       ]
     },
     "Solea": {
-      "Balance": 115.86,
+      "Balance": 109.23,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-08-26",
-      "NextPayoutAmount": 937.95,
+      "NextPayoutDate": "2026-08-27",
+      "NextPayoutAmount": 115.86,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/140512821463",
+          "Brand": "Solea",
+          "Date": "2026-08-27",
+          "Status": "SCHEDULED",
+          "Amount": 115.86,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/140452462807",
           "Brand": "Solea",
           "Date": "2026-08-26",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 937.95,
           "Currency": "CAD"
         },
@@ -6263,16 +6271,24 @@
       ]
     },
     "FloreVitale": {
-      "Balance": 1032.47,
+      "Balance": 887.57,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-08-26",
-      "NextPayoutAmount": 347.83,
+      "NextPayoutDate": "2026-08-27",
+      "NextPayoutAmount": 144.9,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153414205600",
+          "Brand": "FloreVitale",
+          "Date": "2026-08-27",
+          "Status": "SCHEDULED",
+          "Amount": 144.9,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153367511200",
           "Brand": "FloreVitale",
           "Date": "2026-08-26",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 347.83,
           "Currency": "CAD"
         },
@@ -6287,16 +6303,24 @@
       ]
     },
     "Nordik": {
-      "Balance": 1668.71,
+      "Balance": 2045.24,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-08-26",
-      "NextPayoutAmount": 3588.11,
+      "NextPayoutDate": "2026-08-27",
+      "NextPayoutAmount": 1593.14,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/113879187593",
+          "Brand": "Nordik",
+          "Date": "2026-08-27",
+          "Status": "SCHEDULED",
+          "Amount": 1593.14,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/113819975817",
           "Brand": "Nordik",
           "Date": "2026-08-26",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 3588.11,
           "Currency": "CAD"
         },
@@ -6567,16 +6591,40 @@
       ]
     },
     "Blended": {
-      "Balance": 7753.98,
+      "Balance": 8607.43,
       "Currency": "CAD",
       "NextPayoutDate": "2026-08-24",
-      "NextPayoutAmount": 5489.0,
+      "NextPayoutAmount": 2469.01,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/140512821463",
+          "Brand": "Solea",
+          "Date": "2026-08-27",
+          "Status": "SCHEDULED",
+          "Amount": 115.86,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153414205600",
+          "Brand": "FloreVitale",
+          "Date": "2026-08-27",
+          "Status": "SCHEDULED",
+          "Amount": 144.9,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/113879187593",
+          "Brand": "Nordik",
+          "Date": "2026-08-27",
+          "Status": "SCHEDULED",
+          "Amount": 1593.14,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/140452462807",
           "Brand": "Solea",
           "Date": "2026-08-26",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 937.95,
           "Currency": "CAD"
         },
@@ -6584,7 +6632,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153367511200",
           "Brand": "FloreVitale",
           "Date": "2026-08-26",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 347.83,
           "Currency": "CAD"
         },
@@ -6592,7 +6640,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/113819975817",
           "Brand": "Nordik",
           "Date": "2026-08-26",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 3588.11,
           "Currency": "CAD"
         },
