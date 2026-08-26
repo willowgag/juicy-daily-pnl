@@ -345,24 +345,45 @@ def get_month_to_date_profit(sheet, date_str):
     return total
 
 
-def is_near_quebec_midnight(tolerance_minutes=20):
-    """Two cron triggers fire daily (one tuned for EDT, one for EST) since GitHub
-    Actions cron can't itself account for DST. This checks the real, DST-aware
-    Quebec local time and only allows the run through if it's genuinely close to
-    midnight - so whichever trigger fires "on time" for the current season does
-    the real work, and the other one exits immediately without duplicating it."""
+def already_ran_today_for_this_season():
+    """Two cron triggers fire daily since GitHub Actions can't natively handle DST.
+    Rather than guessing which one is 'correct' ahead of time, this just checks:
+    has the EDT-vs-EST status changed since the last successful run, or is this
+    the second trigger firing for a day already covered? We track this via a
+    small marker file committed alongside the data, so it survives between runs
+    regardless of which trigger fires first or how delayed GitHub's queue is."""
+    marker_path = "docs/.last_pull_marker.json"
     now_quebec = datetime.datetime.now(ZoneInfo("America/Toronto"))
-    minutes_since_midnight = now_quebec.hour * 60 + now_quebec.minute
-    minutes_until_midnight = (24 * 60) - minutes_since_midnight
-    return min(minutes_since_midnight, minutes_until_midnight) <= tolerance_minutes
+    today_str = now_quebec.date().isoformat()
+
+    if not os.path.exists(marker_path):
+        return False, today_str
+
+    try:
+        with open(marker_path, "r") as f:
+            marker = json.load(f)
+        return marker.get("last_pull_date") == today_str, today_str
+    except (json.JSONDecodeError, OSError):
+        return False, today_str
+
+
+def write_pull_marker(today_str):
+    marker_path = "docs/.last_pull_marker.json"
+    os.makedirs(os.path.dirname(marker_path), exist_ok=True)
+    with open(marker_path, "w") as f:
+        json.dump({"last_pull_date": today_str}, f)
 
 
 def main():
     is_manual_run = os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
-    if not is_manual_run and not is_near_quebec_midnight():
-        print("Not close to Quebec midnight right now - this is the off-season "
-              "cron trigger, skipping (the other trigger handles today's run).")
-        return
+
+    if not is_manual_run:
+        already_ran, today_str = already_ran_today_for_this_season()
+        if already_ran:
+            print(f"Already pulled data for {today_str} in an earlier trigger today, skipping this duplicate run.")
+            return
+    else:
+        today_str = datetime.datetime.now(ZoneInfo("America/Toronto")).date().isoformat()
 
     google_creds_json = os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"]
     sheet_id = os.environ["GOOGLE_SHEET_ID"]
@@ -424,6 +445,9 @@ def main():
         message_lines.append(f"{month_label}: {fmt(month_to_date)}")
 
     send_telegram_message("\n".join(message_lines))
+
+    if not is_manual_run:
+        write_pull_marker(today_str)
 
     print("Done.")
 
