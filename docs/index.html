@@ -218,6 +218,23 @@
     margin-bottom: 18px;
   }
 
+  .roas-health-pill {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+
+  .roas-health-pill:empty { display: none; }
+
+  .roas-health-pill.excellent { background: rgba(80,140,220,0.16); color: #4f8cdc; }
+  .roas-health-pill.good { background: var(--pos-bg); color: var(--pos-text); }
+  .roas-health-pill.fair { background: rgba(212,180,60,0.16); color: var(--warn-text); }
+  .roas-health-pill.bad { background: var(--neg-bg); color: var(--neg-text); }
+
   .brand-picker { position: relative; width: fit-content; }
 
   .brand-picker-button {
@@ -977,6 +994,7 @@
         </button>
         <div class="brand-picker-menu" id="brandMenu-metaads"></div>
       </div>
+      <span class="roas-health-pill" id="roasHealthPill" title="ROAS vs break-even, last 7 days"></span>
       <div class="range-picker" id="rangePicker-meta">
         <button class="range-picker-button">
           <span data-label>Last 30 days</span>
