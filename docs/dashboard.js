@@ -669,7 +669,70 @@ function getMetaRows() {
   return rows.filter(r => r.Date >= metaCustomRange.start && r.Date <= metaCustomRange.end);
 }
 
+// Per-brand fixed ROAS thresholds, for brands where a break-even-ratio comparison
+// doesn't reflect reality well (e.g. higher-ticket brands need a higher absolute
+// ROAS to be genuinely healthy). Any brand not listed here falls back to the
+// break-even-ratio system below. Thresholds are on raw ROAS, not a ratio.
+const BRAND_ROAS_THRESHOLDS = {
+  Nordik: { excellent: 2.5, good: 2.2, fair: 1.8 },
+};
+
+function updateRoasHealthPill() {
+  const pillEl = document.getElementById("roasHealthPill");
+  const allRows = allData[currentMetaTab] || [];
+
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 7);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  const last7 = allRows.filter(r => r.Date >= cutoffStr);
+
+  const roasValues = last7.map(r => r.facebookRoas).filter(v => v !== null && v !== undefined && v !== "");
+
+  if (roasValues.length === 0) {
+    pillEl.textContent = "";
+    pillEl.className = "roas-health-pill";
+    return;
+  }
+
+  const avgRoas = roasValues.reduce((s, v) => s + v, 0) / roasValues.length;
+
+  const brandThresholds = BRAND_ROAS_THRESHOLDS[currentMetaTab];
+  let label, cls;
+
+  if (brandThresholds) {
+    // Fixed-threshold system: compare raw ROAS directly against this brand's own bar.
+    if (avgRoas >= brandThresholds.excellent) { label = "Excellent"; cls = "excellent"; }
+    else if (avgRoas >= brandThresholds.good) { label = "Good"; cls = "good"; }
+    else if (avgRoas >= brandThresholds.fair) { label = "Fair"; cls = "fair"; }
+    else { label = "Bad"; cls = "bad"; }
+  } else {
+    // Default system: compare ROAS against this brand's own break-even ROAS.
+    const beRoasValues = last7.map(r => r.breakEvenRoasV2).filter(v => v !== null && v !== undefined && v !== "");
+    if (beRoasValues.length === 0) {
+      pillEl.textContent = "";
+      pillEl.className = "roas-health-pill";
+      return;
+    }
+    const avgBeRoas = beRoasValues.reduce((s, v) => s + v, 0) / beRoasValues.length;
+    if (!avgBeRoas) {
+      pillEl.textContent = "";
+      pillEl.className = "roas-health-pill";
+      return;
+    }
+    const ratio = avgRoas / avgBeRoas;
+    if (ratio >= 1.5) { label = "Excellent"; cls = "excellent"; }
+    else if (ratio >= 1.1) { label = "Good"; cls = "good"; }
+    else if (ratio >= 1.0) { label = "Fair"; cls = "fair"; }
+    else { label = "Bad"; cls = "bad"; }
+  }
+
+  pillEl.textContent = label;
+  pillEl.className = "roas-health-pill " + cls;
+}
+
 function renderMetaAds() {
+  updateRoasHealthPill();
+
   const rows = getMetaRows().slice().sort((a, b) => (a.Date < b.Date ? -1 : 1));
   const gridEl = document.getElementById("metaAdsGrid");
 

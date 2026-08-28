@@ -3,7 +3,7 @@ name: Daily Juicy P&L Pull
 on:
   schedule:
     # Runs at 5:00 AM UTC daily = midnight in Quebec (EDT, summer) / 1:00 AM Quebec (EST, winter)
-    - cron: "0 4 * * *"
+    - cron: "0 5 * * *"
   workflow_dispatch: {} # allows manual triggering from the GitHub Actions tab
 
 jobs:
