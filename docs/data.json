@@ -6563,7 +6563,7 @@
   ],
   "Payouts": {
     "Lymphea": {
-      "Balance": 551.44,
+      "Balance": 670.3,
       "Currency": "CAD",
       "NextPayoutDate": "2026-08-31",
       "NextPayoutAmount": 1464.99,
@@ -6699,7 +6699,7 @@
       ]
     },
     "Solea": {
-      "Balance": 424.5,
+      "Balance": 587.13,
       "Currency": "CAD",
       "NextPayoutDate": "2026-08-31",
       "NextPayoutAmount": 352.14,
@@ -7051,7 +7051,7 @@
       ]
     },
     "Nordik": {
-      "Balance": 9193.14,
+      "Balance": 13820.89,
       "Currency": "CAD",
       "NextPayoutDate": "2026-08-31",
       "NextPayoutAmount": 2330.04,
@@ -7355,7 +7355,7 @@
       ]
     },
     "Blended": {
-      "Balance": 10565.63,
+      "Balance": 15474.87,
       "Currency": "CAD",
       "NextPayoutDate": "2026-08-31",
       "NextPayoutAmount": 4443.41,
