@@ -41,6 +41,7 @@ BACKFILL_START_DATES = {
     "Lymphea": "2026-07-25",
     "Solea": "2026-07-01",
     "FloreVitale": "2026-08-12",
+    "Aera": "2026-08-19",
 }
 
 

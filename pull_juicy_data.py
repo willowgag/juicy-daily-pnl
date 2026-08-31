@@ -27,6 +27,7 @@ BRANDS = [
     {"name": "Lymphea", "env_var": "JUICY_TOKEN_LYMPHEA"},
     {"name": "Solea", "env_var": "JUICY_TOKEN_SOLEA"},
     {"name": "FloreVitale", "env_var": "JUICY_TOKEN_FLOREVITALE"},
+    {"name": "Aera", "env_var": "JUICY_TOKEN_AERA"},
 ]
 
 JUICY_BASE_URL = "https://juicy.easyapps.cloud/api/stats/shop"

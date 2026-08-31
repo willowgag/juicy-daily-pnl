@@ -35,6 +35,7 @@ BRANDS = [
     {"name": "Solea", "token_env": "SHOPIFY_TOKEN_SOLEA", "domain_env": "SHOPIFY_DOMAIN_SOLEA"},
     {"name": "FloreVitale", "token_env": "SHOPIFY_TOKEN_FLOREVITALE", "domain_env": "SHOPIFY_DOMAIN_FLOREVITALE"},
     {"name": "Nordik", "token_env": "SHOPIFY_TOKEN_NORDIK", "domain_env": "SHOPIFY_DOMAIN_NORDIK"},
+    {"name": "Aera", "token_env": "SHOPIFY_TOKEN_AERA", "domain_env": "SHOPIFY_DOMAIN_AERA"},
 ]
 
 PAYOUTS_TAB_NAME = "Payouts Raw"
