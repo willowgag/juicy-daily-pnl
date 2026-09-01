@@ -878,6 +878,7 @@
   <button class="nav-item" data-view="annual">Annual</button>
   <button class="nav-item" data-view="payouts">Payouts</button>
   <button class="nav-item" data-view="metaads">Meta Ads</button>
+  <button class="nav-item" data-view="shares">Shares</button>
 </div>
 
 <div class="wrap">
@@ -1005,6 +1006,33 @@
     </div>
 
     <div class="ebitda-grid" id="metaAdsGrid"></div>
+  </div>
+
+  <div class="view" id="view-shares">
+    <div class="summary-bar" id="sharesSummary" style="grid-template-columns: repeat(3, 1fr);"></div>
+
+    <div class="range-panel-title" style="margin-top:24px;">Share by brand</div>
+    <div class="annual-table-wrap" style="margin-top:12px;">
+      <table class="annual-table" id="sharesBrandTable"></table>
+    </div>
+
+    <div class="range-panel" style="margin-top:24px;">
+      <div class="range-panel-title">Log a payment</div>
+      <div class="range-controls">
+        <input type="date" id="sharePaymentDate">
+        <input type="number" id="sharePaymentAmount" placeholder="Amount" step="0.01"
+               style="background:var(--bg);border:1px solid var(--panel-border);color:var(--text);border-radius:7px;padding:6px 10px;font-family:var(--font-body);font-size:13px;width:110px;">
+        <input type="text" id="sharePaymentNote" placeholder="Note (optional)"
+               style="background:var(--bg);border:1px solid var(--panel-border);color:var(--text);border-radius:7px;padding:6px 10px;font-family:var(--font-body);font-size:13px;flex:1 1 140px;">
+        <button id="sharePaymentSubmit">Add</button>
+      </div>
+      <div id="sharePaymentStatus" style="font-size:12px;color:var(--text-dim);"></div>
+    </div>
+
+    <div class="range-panel-title" style="margin-top:24px;">Payment history</div>
+    <div class="annual-table-wrap" style="margin-top:12px;">
+      <table class="annual-table" id="sharesPaymentsTable"></table>
+    </div>
   </div>
 
   <footer>Updated automatically once a day from Juicy P&amp;L data</footer>

@@ -10,7 +10,13 @@ let ebitdaCustomRange = null; // {start, end} - only used when preset is "Custom
 let metaPreset = "Last 30 days";
 let metaCustomRange = null;
 
-const VIEW_LABELS = { calendar: "Calendar", ebitda: "EBITDA", annual: "Annual", payouts: "Payouts", metaads: "Meta Ads" };
+const VIEW_LABELS = { calendar: "Calendar", ebitda: "EBITDA", annual: "Annual", payouts: "Payouts", metaads: "Meta Ads", shares: "Shares" };
+
+// Apps Script webhook that writes payment entries into the "Shares Payments"
+// sheet tab. Set both of these after deploying shares_webhook.gs - the secret
+// must match SHARED_SECRET in that script exactly.
+const SHARES_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx8XxV2k_ee0D8toaUFOI3V9-aUPRksNn0SCEX1iEpQuPaHXfEaPQX958YzLxBP1Pxx/exec";
+const SHARES_WEBHOOK_SECRET = "awdawdggsdvvnbhdergsetrtr6645648fdg";
 
 const DATE_PRESETS = ["Yesterday", "Last 7 days", "Last 14 days", "Last 30 days", "This month", "Last month", "Maximum"];
 
@@ -71,7 +77,7 @@ function initTheme() {
 }
 
 function updateThemeToggleIcon(theme) {
-  document.getElementById("themeToggle").textContent = theme === "dark" ? "\u2600" : "\u263D";
+  document.getElementById("themeToggle").textContent = theme === "dark" ? "☀" : "☽";
 }
 
 document.getElementById("themeToggle").onclick = () => {
@@ -922,6 +928,134 @@ document.getElementById("chartModalOverlay").onclick = (e) => {
 };
 
 // ---- Main render ----
+// ---- Shares view ----
+function renderShares() {
+  const shares = allData["Shares"];
+  const summaryEl = document.getElementById("sharesSummary");
+  const brandTableEl = document.getElementById("sharesBrandTable");
+  const paymentsTableEl = document.getElementById("sharesPaymentsTable");
+
+  if (!shares) {
+    summaryEl.innerHTML = `<div style="padding:20px;color:var(--text-dim);grid-column:1/-1;">No shares data yet. Run the daily pull to generate it.</div>`;
+    brandTableEl.innerHTML = "";
+    paymentsTableEl.innerHTML = "";
+    return;
+  }
+
+  const owed = shares.TotalOwed || 0;
+  const paid = shares.TotalPaid || 0;
+  const balance = shares.Balance || 0;
+
+  summaryEl.innerHTML = `
+    <div class="stat">
+      <div class="stat-label">Total owed</div>
+      <div class="stat-value">${formatMoneyFull(owed)}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Already paid</div>
+      <div class="stat-value">${formatMoneyFull(paid)}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Outstanding balance</div>
+      <div class="stat-value ${balance >= 0 ? "pos" : "neg"}">${formatMoneyFull(balance)}</div>
+    </div>
+  `;
+
+  // Per-brand breakdown
+  const perBrand = shares.PerBrand || {};
+  const brandNames = Object.keys(perBrand);
+  if (brandNames.length === 0) {
+    brandTableEl.innerHTML = `<tr><td style="padding:20px;color:var(--text-dim);">No brands configured for shares.</td></tr>`;
+  } else {
+    let html = `
+      <thead>
+        <tr><th>Brand</th><th>Share</th><th>Net profit</th><th>Owed</th></tr>
+      </thead>
+      <tbody>
+    `;
+    brandNames.forEach(name => {
+      const b = perBrand[name];
+      html += `
+        <tr>
+          <td>${name}</td>
+          <td>${b.SharePct}%</td>
+          <td class="${(b.NetProfit || 0) >= 0 ? 'pos' : 'neg'}">${formatMoneyFull(b.NetProfit || 0)}</td>
+          <td>${formatMoneyFull(b.Owed || 0)}</td>
+        </tr>
+      `;
+    });
+    html += "</tbody>";
+    brandTableEl.innerHTML = html;
+  }
+
+  // Payment history
+  const payments = shares.Payments || [];
+  if (payments.length === 0) {
+    paymentsTableEl.innerHTML = `<tr><td style="padding:20px;color:var(--text-dim);">No payments logged yet.</td></tr>`;
+  } else {
+    let html = `
+      <thead>
+        <tr><th>Date</th><th>Amount</th><th>Note</th></tr>
+      </thead>
+      <tbody>
+    `;
+    payments.forEach(p => {
+      html += `
+        <tr>
+          <td>${p.Date || "—"}</td>
+          <td>${formatMoneyFull(p.Amount || 0)}</td>
+          <td style="text-align:right;color:var(--text-dim);">${p.Note || ""}</td>
+        </tr>
+      `;
+    });
+    html += "</tbody>";
+    paymentsTableEl.innerHTML = html;
+  }
+}
+
+document.getElementById("sharePaymentSubmit").onclick = async () => {
+  const dateEl = document.getElementById("sharePaymentDate");
+  const amountEl = document.getElementById("sharePaymentAmount");
+  const noteEl = document.getElementById("sharePaymentNote");
+  const statusEl = document.getElementById("sharePaymentStatus");
+
+  const amount = parseFloat(amountEl.value);
+  if (isNaN(amount)) {
+    statusEl.textContent = "Enter an amount first.";
+    return;
+  }
+
+  const date = dateEl.value || new Date().toISOString().slice(0, 10);
+
+  statusEl.textContent = "Saving...";
+
+  try {
+    // Apps Script web apps don't return CORS headers on POST, so we use no-cors
+    // mode: the request goes through and writes the row, but we can't read the
+    // response back. That's why we show an optimistic message rather than
+    // confirming from the server.
+    await fetch(SHARES_WEBHOOK_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        secret: SHARES_WEBHOOK_SECRET,
+        date: date,
+        amount: amount,
+        recipient: "Brother",
+        note: noteEl.value || "",
+      }),
+    });
+
+    statusEl.textContent = `Sent ${formatMoneyFull(amount)} for ${date}. It'll appear here after the next daily refresh.`;
+    amountEl.value = "";
+    noteEl.value = "";
+  } catch (err) {
+    statusEl.textContent = "Couldn't save - check the webhook URL is set correctly.";
+  }
+};
+
+// ---- Main render ----
 function render() {
   const pnlBrands = getPnlBrandNames();
   buildBrandPicker("calendar", pnlBrands, currentTab, (name) => { currentTab = name; render(); });
@@ -965,6 +1099,8 @@ function render() {
     renderPayouts();
   } else if (currentView === "metaads") {
     renderMetaAds();
+  } else if (currentView === "shares") {
+    renderShares();
   }
 }
 
