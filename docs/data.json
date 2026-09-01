@@ -8887,5 +8887,25 @@
       "facebookOrdersFloat": 1.0,
       "facebookCpoFloat": 40.55
     }
-  ]
+  ],
+  "Shares": {
+    "PerBrand": {
+      "Nordik": {
+        "SharePct": 70.0,
+        "NetProfit": 13034.0,
+        "Owed": 9123.8,
+        "DaysCounted": 62
+      },
+      "Aera": {
+        "SharePct": 50.0,
+        "NetProfit": -132.71,
+        "Owed": -66.36,
+        "DaysCounted": 13
+      }
+    },
+    "TotalOwed": 9057.44,
+    "TotalPaid": 0,
+    "Balance": 9057.44,
+    "Payments": []
+  }
 }
