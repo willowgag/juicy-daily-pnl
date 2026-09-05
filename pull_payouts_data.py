@@ -30,13 +30,17 @@ from google.oauth2.service_account import Credentials
 
 # ---- Config ----
 
+# Brands actively pulled each day. Retired stores go in RETIRED_BRANDS below -
+# their existing payout rows stay in the Sheet and on the dashboard, we just
+# stop calling Shopify for them.
 BRANDS = [
     {"name": "Lymphea", "token_env": "SHOPIFY_TOKEN_LYMPHEA", "domain_env": "SHOPIFY_DOMAIN_LYMPHEA"},
     {"name": "Solea", "token_env": "SHOPIFY_TOKEN_SOLEA", "domain_env": "SHOPIFY_DOMAIN_SOLEA"},
-    {"name": "FloreVitale", "token_env": "SHOPIFY_TOKEN_FLOREVITALE", "domain_env": "SHOPIFY_DOMAIN_FLOREVITALE"},
     {"name": "Nordik", "token_env": "SHOPIFY_TOKEN_NORDIK", "domain_env": "SHOPIFY_DOMAIN_NORDIK"},
-    {"name": "Aera", "token_env": "SHOPIFY_TOKEN_AERA", "domain_env": "SHOPIFY_DOMAIN_AERA"},
 ]
+
+# No longer operating these stores - historical payout data is preserved.
+RETIRED_BRANDS = ["FloreVitale", "Aera"]
 
 PAYOUTS_TAB_NAME = "Payouts Raw"
 PAYOUTS_HEADER = ["PayoutId", "Brand", "Date", "Status", "Amount", "Currency"]
@@ -323,7 +327,8 @@ def main():
     append_balance_rows_if_new(balance_ws, all_balance_rows)
 
     print("Exporting Payouts dashboard JSON...")
-    export_payouts_json(sheet, [b["name"] for b in BRANDS])
+    # Retired brands included so their historical payouts stay on the dashboard.
+    export_payouts_json(sheet, [b["name"] for b in BRANDS] + RETIRED_BRANDS)
 
     print("Done.")
 

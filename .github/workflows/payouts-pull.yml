@@ -31,10 +31,6 @@ jobs:
           SHOPIFY_DOMAIN_LYMPHEA: ${{ secrets.SHOPIFY_DOMAIN_LYMPHEA }}
           SHOPIFY_TOKEN_SOLEA: ${{ secrets.SHOPIFY_TOKEN_SOLEA }}
           SHOPIFY_DOMAIN_SOLEA: ${{ secrets.SHOPIFY_DOMAIN_SOLEA }}
-          SHOPIFY_TOKEN_FLOREVITALE: ${{ secrets.SHOPIFY_TOKEN_FLOREVITALE }}
-          SHOPIFY_DOMAIN_FLOREVITALE: ${{ secrets.SHOPIFY_DOMAIN_FLOREVITALE }}
-          SHOPIFY_TOKEN_AERA: ${{ secrets.SHOPIFY_TOKEN_AERA }}
-          SHOPIFY_DOMAIN_AERA: ${{ secrets.SHOPIFY_DOMAIN_AERA }}
           SHOPIFY_TOKEN_NORDIK: ${{ secrets.SHOPIFY_TOKEN_NORDIK }}
           SHOPIFY_DOMAIN_NORDIK: ${{ secrets.SHOPIFY_DOMAIN_NORDIK }}
         run: python pull_payouts_data.py

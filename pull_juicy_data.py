@@ -22,13 +22,18 @@ from google.oauth2.service_account import Credentials
 
 # ---- Config ----
 
+# Brands actively pulled each day. Retired stores are listed in RETIRED_BRANDS
+# below instead - their existing Sheet tabs (and dashboard history) are kept,
+# we just stop making API calls for them.
 BRANDS = [
     {"name": "Nordik", "env_var": "JUICY_TOKEN_NORDIK"},
     {"name": "Lymphea", "env_var": "JUICY_TOKEN_LYMPHEA"},
     {"name": "Solea", "env_var": "JUICY_TOKEN_SOLEA"},
-    {"name": "FloreVitale", "env_var": "JUICY_TOKEN_FLOREVITALE"},
-    {"name": "Aera", "env_var": "JUICY_TOKEN_AERA"},
 ]
+
+# No longer operating these stores - kept here so their historical tabs still
+# get exported to the dashboard, but nothing new is fetched for them.
+RETIRED_BRANDS = ["FloreVitale", "Aera"]
 
 JUICY_BASE_URL = "https://juicy.easyapps.cloud/api/stats/shop"
 
@@ -384,7 +389,9 @@ def main():
         print("  No brand data fetched, skipping Blended row.")
 
     print("Exporting dashboard JSON...")
-    export_json_for_dashboard(sheet, [b["name"] for b in BRANDS])
+    # Retired brands are included here so their historical tabs still reach the
+    # dashboard, even though we no longer fetch new data for them.
+    export_json_for_dashboard(sheet, [b["name"] for b in BRANDS] + RETIRED_BRANDS)
 
     print("Sending Telegram notification...")
     if brand_rows:

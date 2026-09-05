@@ -36,12 +36,13 @@ from pull_juicy_data import (
 
 # ---- Backfill config: edit these before running ----
 
+# Only currently-operating stores. Retired brands (FloreVitale, Aera) are
+# deliberately absent - their historical rows are already in the Sheet and
+# don't need re-fetching.
 BACKFILL_START_DATES = {
     "Nordik": "2026-07-01",
     "Lymphea": "2026-07-25",
     "Solea": "2026-07-01",
-    "FloreVitale": "2026-08-12",
-    "Aera": "2026-08-19",
 }
 
 
@@ -151,7 +152,15 @@ def main():
             continue
 
         print(f"Fetching {name} from {start_date} to {yesterday}...")
-        data = fetch_juicy_stats(token, start_date, yesterday)
+        try:
+            data = fetch_juicy_stats(token, start_date, yesterday)
+        except Exception as e:
+            # Don't let one brand's failure (expired subscription, bad token,
+            # Juicy outage) abort the whole backfill - log it and keep going
+            # so the other brands still get their data.
+            print(f"  ERROR fetching {name}: {e} - skipping this brand.")
+            continue
+
         rows_by_date = extract_all_rows(data, start_date, yesterday)
         brand_rows_by_date[name] = rows_by_date
 
