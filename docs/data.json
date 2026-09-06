@@ -7978,72 +7978,8 @@
         }
       ]
     },
-    "FloreVitale": {
-      "Balance": 712.66,
-      "Currency": "CAD",
-      "NextPayoutDate": "2026-09-08",
-      "NextPayoutAmount": 87.35,
-      "Payouts": [
-        {
-          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153810993312",
-          "Brand": "FloreVitale",
-          "Date": "2026-09-08",
-          "Status": "SCHEDULED",
-          "Amount": 87.35,
-          "Currency": "CAD"
-        },
-        {
-          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153598689440",
-          "Brand": "FloreVitale",
-          "Date": "2026-09-01",
-          "Status": "PAID",
-          "Amount": 396.55,
-          "Currency": "CAD"
-        },
-        {
-          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153512542368",
-          "Brand": "FloreVitale",
-          "Date": "2026-08-31",
-          "Status": "PAID",
-          "Amount": 296.24,
-          "Currency": "CAD"
-        },
-        {
-          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153474498720",
-          "Brand": "FloreVitale",
-          "Date": "2026-08-28",
-          "Status": "PAID",
-          "Amount": 194.78,
-          "Currency": "CAD"
-        },
-        {
-          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153414205600",
-          "Brand": "FloreVitale",
-          "Date": "2026-08-27",
-          "Status": "PAID",
-          "Amount": 144.9,
-          "Currency": "CAD"
-        },
-        {
-          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153367511200",
-          "Brand": "FloreVitale",
-          "Date": "2026-08-26",
-          "Status": "PAID",
-          "Amount": 347.83,
-          "Currency": "CAD"
-        },
-        {
-          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153312657568",
-          "Brand": "FloreVitale",
-          "Date": "2026-08-25",
-          "Status": "PAID",
-          "Amount": 834.84,
-          "Currency": "CAD"
-        }
-      ]
-    },
     "Nordik": {
-      "Balance": 22802.15,
+      "Balance": 25966.72,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
       "NextPayoutAmount": 7565.99,
@@ -8386,6 +8322,70 @@
         }
       ]
     },
+    "FloreVitale": {
+      "Balance": 712.66,
+      "Currency": "CAD",
+      "NextPayoutDate": "2026-09-08",
+      "NextPayoutAmount": 87.35,
+      "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153810993312",
+          "Brand": "FloreVitale",
+          "Date": "2026-09-08",
+          "Status": "SCHEDULED",
+          "Amount": 87.35,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153598689440",
+          "Brand": "FloreVitale",
+          "Date": "2026-09-01",
+          "Status": "PAID",
+          "Amount": 396.55,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153512542368",
+          "Brand": "FloreVitale",
+          "Date": "2026-08-31",
+          "Status": "PAID",
+          "Amount": 296.24,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153474498720",
+          "Brand": "FloreVitale",
+          "Date": "2026-08-28",
+          "Status": "PAID",
+          "Amount": 194.78,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153414205600",
+          "Brand": "FloreVitale",
+          "Date": "2026-08-27",
+          "Status": "PAID",
+          "Amount": 144.9,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153367511200",
+          "Brand": "FloreVitale",
+          "Date": "2026-08-26",
+          "Status": "PAID",
+          "Amount": 347.83,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/153312657568",
+          "Brand": "FloreVitale",
+          "Date": "2026-08-25",
+          "Status": "PAID",
+          "Amount": 834.84,
+          "Currency": "CAD"
+        }
+      ]
+    },
     "Aera": {
       "Balance": 372.89,
       "Currency": "CAD",
@@ -8394,7 +8394,7 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": 24594.47,
+      "Balance": 27759.04,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
       "NextPayoutAmount": 7968.89,
