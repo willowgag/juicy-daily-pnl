@@ -8451,7 +8451,7 @@
       ]
     },
     "Solea": {
-      "Balance": 345.91,
+      "Balance": 441.99,
       "Currency": "CAD",
       "NextPayoutDate": "",
       "NextPayoutAmount": "",
@@ -8819,7 +8819,7 @@
       ]
     },
     "Nordik": {
-      "Balance": 16171.73,
+      "Balance": 17959.75,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-14",
       "NextPayoutAmount": 3160.26,
@@ -9258,7 +9258,7 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": 17707.8,
+      "Balance": 19591.9,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
       "NextPayoutAmount": 3325.21,
