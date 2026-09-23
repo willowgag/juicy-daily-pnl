@@ -9363,16 +9363,64 @@
   ],
   "Payouts": {
     "Lymphea": {
-      "Balance": 154.9,
+      "Balance": 193.25,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-09-15",
-      "NextPayoutAmount": 65.96,
+      "NextPayoutDate": "2026-09-24",
+      "NextPayoutAmount": 77.6,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143094218967",
+          "Brand": "Lymphea",
+          "Date": "2026-09-24",
+          "Status": "SCHEDULED",
+          "Amount": 77.6,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143053422807",
+          "Brand": "Lymphea",
+          "Date": "2026-09-23",
+          "Status": "PAID",
+          "Amount": 115.95,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/142995128535",
+          "Brand": "Lymphea",
+          "Date": "2026-09-22",
+          "Status": "PAID",
+          "Amount": 75.96,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141382975703",
+          "Brand": "Lymphea",
+          "Date": "2026-09-18",
+          "Status": "PAID",
+          "Amount": 38.65,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141341655255",
+          "Brand": "Lymphea",
+          "Date": "2026-09-17",
+          "Status": "PAID",
+          "Amount": 77.6,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141287063767",
+          "Brand": "Lymphea",
+          "Date": "2026-09-16",
+          "Status": "PAID",
+          "Amount": 114.91,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141228933335",
           "Brand": "Lymphea",
           "Date": "2026-09-15",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 65.96,
           "Currency": "CAD"
         },
@@ -9579,11 +9627,59 @@
       ]
     },
     "Solea": {
-      "Balance": 509.5,
+      "Balance": 163.59,
       "Currency": "CAD",
-      "NextPayoutDate": "",
-      "NextPayoutAmount": "",
+      "NextPayoutDate": "2026-09-24",
+      "NextPayoutAmount": 276.34,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143100641495",
+          "Brand": "Solea",
+          "Date": "2026-09-24",
+          "Status": "SCHEDULED",
+          "Amount": 276.34,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143053455575",
+          "Brand": "Solea",
+          "Date": "2026-09-23",
+          "Status": "PAID",
+          "Amount": 281.58,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141444743383",
+          "Brand": "Solea",
+          "Date": "2026-09-21",
+          "Status": "PAID",
+          "Amount": 87.02,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141406503127",
+          "Brand": "Solea",
+          "Date": "2026-09-18",
+          "Status": "PAID",
+          "Amount": 173.37,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141341294807",
+          "Brand": "Solea",
+          "Date": "2026-09-17",
+          "Status": "PAID",
+          "Amount": 58.58,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141286834391",
+          "Brand": "Solea",
+          "Date": "2026-09-16",
+          "Status": "PAID",
+          "Amount": 340.22,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141107790039",
           "Brand": "Solea",
@@ -9947,16 +10043,32 @@
       ]
     },
     "Nordik": {
-      "Balance": 9648.21,
+      "Balance": -296.9,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-09-15",
-      "NextPayoutAmount": 10571.21,
+      "NextPayoutDate": "",
+      "NextPayoutAmount": "",
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/114789548169",
+          "Brand": "Nordik",
+          "Date": "2026-09-22",
+          "Status": "PAID",
+          "Amount": 168.95,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/114566201481",
+          "Brand": "Nordik",
+          "Date": "2026-09-16",
+          "Status": "PAID",
+          "Amount": 9528.26,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/114525175945",
           "Brand": "Nordik",
           "Date": "2026-09-15",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 10571.21,
           "Currency": "CAD"
         },
@@ -10394,16 +10506,128 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": 11398.16,
+      "Balance": 1145.49,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
-      "NextPayoutAmount": 10724.52,
+      "NextPayoutAmount": 441.29,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143094218967",
+          "Brand": "Lymphea",
+          "Date": "2026-09-24",
+          "Status": "SCHEDULED",
+          "Amount": 77.6,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143100641495",
+          "Brand": "Solea",
+          "Date": "2026-09-24",
+          "Status": "SCHEDULED",
+          "Amount": 276.34,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143053422807",
+          "Brand": "Lymphea",
+          "Date": "2026-09-23",
+          "Status": "PAID",
+          "Amount": 115.95,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143053455575",
+          "Brand": "Solea",
+          "Date": "2026-09-23",
+          "Status": "PAID",
+          "Amount": 281.58,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/142995128535",
+          "Brand": "Lymphea",
+          "Date": "2026-09-22",
+          "Status": "PAID",
+          "Amount": 75.96,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/114789548169",
+          "Brand": "Nordik",
+          "Date": "2026-09-22",
+          "Status": "PAID",
+          "Amount": 168.95,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141444743383",
+          "Brand": "Solea",
+          "Date": "2026-09-21",
+          "Status": "PAID",
+          "Amount": 87.02,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141382975703",
+          "Brand": "Lymphea",
+          "Date": "2026-09-18",
+          "Status": "PAID",
+          "Amount": 38.65,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141406503127",
+          "Brand": "Solea",
+          "Date": "2026-09-18",
+          "Status": "PAID",
+          "Amount": 173.37,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141341655255",
+          "Brand": "Lymphea",
+          "Date": "2026-09-17",
+          "Status": "PAID",
+          "Amount": 77.6,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141341294807",
+          "Brand": "Solea",
+          "Date": "2026-09-17",
+          "Status": "PAID",
+          "Amount": 58.58,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141287063767",
+          "Brand": "Lymphea",
+          "Date": "2026-09-16",
+          "Status": "PAID",
+          "Amount": 114.91,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141286834391",
+          "Brand": "Solea",
+          "Date": "2026-09-16",
+          "Status": "PAID",
+          "Amount": 340.22,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/114566201481",
+          "Brand": "Nordik",
+          "Date": "2026-09-16",
+          "Status": "PAID",
+          "Amount": 9528.26,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/141228933335",
           "Brand": "Lymphea",
           "Date": "2026-09-15",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 65.96,
           "Currency": "CAD"
         },
@@ -10411,7 +10635,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/114525175945",
           "Brand": "Nordik",
           "Date": "2026-09-15",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 10571.21,
           "Currency": "CAD"
         },
