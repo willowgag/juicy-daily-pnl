@@ -9475,16 +9475,24 @@
   ],
   "Payouts": {
     "Lymphea": {
-      "Balance": 193.25,
+      "Balance": 37.31,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-09-24",
-      "NextPayoutAmount": 77.6,
+      "NextPayoutDate": "2026-09-25",
+      "NextPayoutAmount": 193.25,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143154938071",
+          "Brand": "Lymphea",
+          "Date": "2026-09-25",
+          "Status": "SCHEDULED",
+          "Amount": 193.25,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143094218967",
           "Brand": "Lymphea",
           "Date": "2026-09-24",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 77.6,
           "Currency": "CAD"
         },
@@ -9739,16 +9747,24 @@
       ]
     },
     "Solea": {
-      "Balance": 163.59,
+      "Balance": 144.43,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-09-24",
-      "NextPayoutAmount": 276.34,
+      "NextPayoutDate": "2026-09-25",
+      "NextPayoutAmount": 60.75,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143146713303",
+          "Brand": "Solea",
+          "Date": "2026-09-25",
+          "Status": "SCHEDULED",
+          "Amount": 60.75,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143100641495",
           "Brand": "Solea",
           "Date": "2026-09-24",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 276.34,
           "Currency": "CAD"
         },
@@ -10618,16 +10634,32 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": 1145.49,
+      "Balance": 970.39,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
-      "NextPayoutAmount": 441.29,
+      "NextPayoutAmount": 341.35,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143154938071",
+          "Brand": "Lymphea",
+          "Date": "2026-09-25",
+          "Status": "SCHEDULED",
+          "Amount": 193.25,
+          "Currency": "CAD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143146713303",
+          "Brand": "Solea",
+          "Date": "2026-09-25",
+          "Status": "SCHEDULED",
+          "Amount": 60.75,
+          "Currency": "CAD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143094218967",
           "Brand": "Lymphea",
           "Date": "2026-09-24",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 77.6,
           "Currency": "CAD"
         },
@@ -10635,7 +10667,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143100641495",
           "Brand": "Solea",
           "Date": "2026-09-24",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 276.34,
           "Currency": "CAD"
         },
