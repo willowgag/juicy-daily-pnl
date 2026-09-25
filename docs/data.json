@@ -9589,14 +9589,14 @@
     "Lymphea": {
       "Balance": 37.31,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-09-25",
-      "NextPayoutAmount": 193.25,
+      "NextPayoutDate": "",
+      "NextPayoutAmount": "",
       "Payouts": [
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143154938071",
           "Brand": "Lymphea",
           "Date": "2026-09-25",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 193.25,
           "Currency": "CAD"
         },
@@ -9861,14 +9861,14 @@
     "Solea": {
       "Balance": 144.43,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-09-25",
-      "NextPayoutAmount": 60.75,
+      "NextPayoutDate": "",
+      "NextPayoutAmount": "",
       "Payouts": [
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143146713303",
           "Brand": "Solea",
           "Date": "2026-09-25",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 60.75,
           "Currency": "CAD"
         },
@@ -10283,7 +10283,7 @@
       ]
     },
     "Nordik": {
-      "Balance": -296.9,
+      "Balance": -446.85,
       "Currency": "CAD",
       "NextPayoutDate": "",
       "NextPayoutAmount": "",
@@ -10746,16 +10746,16 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": 970.39,
+      "Balance": 820.44,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
-      "NextPayoutAmount": 341.35,
+      "NextPayoutAmount": 87.35,
       "Payouts": [
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143154938071",
           "Brand": "Lymphea",
           "Date": "2026-09-25",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 193.25,
           "Currency": "CAD"
         },
@@ -10763,7 +10763,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/143146713303",
           "Brand": "Solea",
           "Date": "2026-09-25",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 60.75,
           "Currency": "CAD"
         },
