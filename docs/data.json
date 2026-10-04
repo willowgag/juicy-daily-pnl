@@ -10737,9 +10737,17 @@
     "Solea": {
       "Balance": 189.93,
       "Currency": "CAD",
-      "NextPayoutDate": "",
-      "NextPayoutAmount": "",
+      "NextPayoutDate": "2026-10-05",
+      "NextPayoutAmount": 59.16,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145237606615",
+          "Brand": "Solea",
+          "Date": "2026-10-05",
+          "Status": "SCHEDULED",
+          "Amount": 59.16,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145153786071",
           "Brand": "Solea",
@@ -11183,11 +11191,19 @@
       ]
     },
     "Nordik": {
-      "Balance": -1489.9,
+      "Balance": -1654.65,
       "Currency": "CAD",
-      "NextPayoutDate": "",
-      "NextPayoutAmount": "",
+      "NextPayoutDate": "2026-10-05",
+      "NextPayoutAmount": 28991.56,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115245547657",
+          "Brand": "Nordik",
+          "Date": "2026-10-05",
+          "Status": "SCHEDULED",
+          "Amount": 28991.56,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115047104649",
           "Brand": "Nordik",
@@ -11662,11 +11678,27 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": -217.1,
+      "Balance": -381.85,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
-      "NextPayoutAmount": 193.1,
+      "NextPayoutAmount": 29243.82,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145237606615",
+          "Brand": "Solea",
+          "Date": "2026-10-05",
+          "Status": "SCHEDULED",
+          "Amount": 59.16,
+          "Currency": "USD"
+        },
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115245547657",
+          "Brand": "Nordik",
+          "Date": "2026-10-05",
+          "Status": "SCHEDULED",
+          "Amount": 28991.56,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145153786071",
           "Brand": "Solea",
