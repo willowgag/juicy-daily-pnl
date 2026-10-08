@@ -11073,14 +11073,14 @@
     "Solea": {
       "Balance": 303.88,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-10-08",
-      "NextPayoutAmount": 191.73,
+      "NextPayoutDate": "",
+      "NextPayoutAmount": "",
       "Payouts": [
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145403347159",
           "Brand": "Solea",
           "Date": "2026-10-08",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 191.73,
           "Currency": "USD"
         },
@@ -11551,16 +11551,24 @@
       ]
     },
     "Nordik": {
-      "Balance": -1654.65,
+      "Balance": -1809.6,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-10-08",
-      "NextPayoutAmount": 6075.66,
+      "NextPayoutDate": "2026-10-09",
+      "NextPayoutAmount": 6561.77,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115431473289",
+          "Brand": "Nordik",
+          "Date": "2026-10-09",
+          "Status": "SCHEDULED",
+          "Amount": 6561.77,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115404734601",
           "Brand": "Nordik",
           "Date": "2026-10-08",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 6075.66,
           "Currency": "USD"
         },
@@ -12062,16 +12070,24 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": -267.9,
+      "Balance": -422.85,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
-      "NextPayoutAmount": 6460.49,
+      "NextPayoutAmount": 6754.87,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115431473289",
+          "Brand": "Nordik",
+          "Date": "2026-10-09",
+          "Status": "SCHEDULED",
+          "Amount": 6561.77,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145403347159",
           "Brand": "Solea",
           "Date": "2026-10-08",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 191.73,
           "Currency": "USD"
         },
@@ -12079,7 +12095,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115404734601",
           "Brand": "Nordik",
           "Date": "2026-10-08",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 6075.66,
           "Currency": "USD"
         },
