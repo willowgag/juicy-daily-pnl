@@ -11719,8 +11719,8 @@
       ]
     },
     "Nordik": {
-      "Balance": -1809.6,
-      "Currency": "CAD",
+      "Balance": 1556.06,
+      "Currency": "USD",
       "NextPayoutDate": "",
       "NextPayoutAmount": "",
       "Payouts": [
@@ -12238,7 +12238,7 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": -422.85,
+      "Balance": 2942.81,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
       "NextPayoutAmount": 193.1,
