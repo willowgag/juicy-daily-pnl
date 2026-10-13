@@ -11493,14 +11493,22 @@
     "Solea": {
       "Balance": 368.83,
       "Currency": "CAD",
-      "NextPayoutDate": "2026-10-13",
-      "NextPayoutAmount": 98.87,
+      "NextPayoutDate": "2026-10-14",
+      "NextPayoutAmount": 51.62,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145630789847",
+          "Brand": "Solea",
+          "Date": "2026-10-14",
+          "Status": "SCHEDULED",
+          "Amount": 51.62,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145561747671",
           "Brand": "Solea",
           "Date": "2026-10-13",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 98.87,
           "Currency": "USD"
         },
@@ -11979,11 +11987,19 @@
       ]
     },
     "Nordik": {
-      "Balance": 24696.3,
+      "Balance": 37656.26,
       "Currency": "USD",
-      "NextPayoutDate": "2026-10-18",
-      "NextPayoutAmount": 1657.84,
+      "NextPayoutDate": "2026-10-19",
+      "NextPayoutAmount": 1862.08,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115600720009",
+          "Brand": "Nordik",
+          "Date": "2026-10-19",
+          "Status": "SCHEDULED",
+          "Amount": 1862.08,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115550486665",
           "Brand": "Nordik",
@@ -12004,7 +12020,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115525976201",
           "Brand": "Nordik",
           "Date": "2026-10-13",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 43.93,
           "Currency": "USD"
         },
@@ -12522,11 +12538,19 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": 26148.0,
+      "Balance": 39107.96,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
-      "NextPayoutAmount": 1949.81,
+      "NextPayoutAmount": 2106.8,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115600720009",
+          "Brand": "Nordik",
+          "Date": "2026-10-19",
+          "Status": "SCHEDULED",
+          "Amount": 1862.08,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115550486665",
           "Brand": "Nordik",
@@ -12544,10 +12568,18 @@
           "Currency": "USD"
         },
         {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145630789847",
+          "Brand": "Solea",
+          "Date": "2026-10-14",
+          "Status": "SCHEDULED",
+          "Amount": 51.62,
+          "Currency": "USD"
+        },
+        {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/145561747671",
           "Brand": "Solea",
           "Date": "2026-10-13",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 98.87,
           "Currency": "USD"
         },
@@ -12555,7 +12587,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/115525976201",
           "Brand": "Nordik",
           "Date": "2026-10-13",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 43.93,
           "Currency": "USD"
         },
