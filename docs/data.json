@@ -2995,6 +2995,34 @@
       "facebookRoas": 3.08,
       "facebookOrdersFloat": 143.0,
       "facebookCpoFloat": 51.95
+    },
+    {
+      "Date": "2026-10-17",
+      "grossSalesV2": 61433.48,
+      "discountsV2": 22891.7,
+      "totalSalesV2": 39727.25,
+      "netRevenueV2": 39730.67,
+      "cogsV2": 18658.01,
+      "transactionFees": 2399.5,
+      "grossProfitV2": 18768.96,
+      "totalAdSpend": 9748.68,
+      "facebookAdSpend": 9676.74,
+      "googleAdSpend": 71.94,
+      "netProfitV2": 9020.28,
+      "grossMarginV2": 47.24,
+      "netMarginV2": 22.7,
+      "ordersFloat": 250.0,
+      "breakEvenRoasV2": 2.11,
+      "facebookImpressions": 268857.0,
+      "facebookReach": 239464.0,
+      "facebookFrequency": 1.12,
+      "facebookClicks": 14682.0,
+      "facebookCtr": 5.46,
+      "facebookCpc": 0.65,
+      "facebookCpm": 35.99,
+      "facebookRoas": 3.11,
+      "facebookOrdersFloat": 194.0,
+      "facebookCpoFloat": 49.88
     }
   ],
   "Lymphea": [
@@ -7843,6 +7871,34 @@
       "facebookRoas": "",
       "facebookOrdersFloat": 0.0,
       "facebookCpoFloat": ""
+    },
+    {
+      "Date": "2026-10-17",
+      "grossSalesV2": 394.61,
+      "discountsV2": 200.76,
+      "totalSalesV2": 198.85,
+      "netRevenueV2": 198.85,
+      "cogsV2": 51.71,
+      "transactionFees": 12.8,
+      "grossProfitV2": 134.34,
+      "totalAdSpend": 0.0,
+      "facebookAdSpend": 0.0,
+      "googleAdSpend": 0.0,
+      "netProfitV2": 134.34,
+      "grossMarginV2": 67.55,
+      "netMarginV2": 67.55,
+      "ordersFloat": 3.0,
+      "breakEvenRoasV2": 1.48,
+      "facebookImpressions": 0.0,
+      "facebookReach": 0.0,
+      "facebookFrequency": "",
+      "facebookClicks": 0.0,
+      "facebookCtr": "",
+      "facebookCpc": "",
+      "facebookCpm": "",
+      "facebookRoas": "",
+      "facebookOrdersFloat": 2.0,
+      "facebookCpoFloat": 0.0
     }
   ],
   "FloreVitale": [
@@ -11459,6 +11515,34 @@
       "facebookRoas": 3.08,
       "facebookOrdersFloat": 143.0,
       "facebookCpoFloat": 51.95
+    },
+    {
+      "Date": "2026-10-17",
+      "grossSalesV2": 61828.09,
+      "discountsV2": 23092.46,
+      "totalSalesV2": 39926.1,
+      "netRevenueV2": 39929.52,
+      "cogsV2": 18709.72,
+      "transactionFees": 2412.3,
+      "grossProfitV2": 18903.3,
+      "totalAdSpend": 9748.68,
+      "facebookAdSpend": 9676.74,
+      "googleAdSpend": 71.94,
+      "netProfitV2": 9154.62,
+      "grossMarginV2": 47.34,
+      "netMarginV2": 22.93,
+      "ordersFloat": 253.0,
+      "breakEvenRoasV2": 2.12,
+      "facebookImpressions": 268857.0,
+      "facebookReach": 239464.0,
+      "facebookFrequency": 1.12,
+      "facebookClicks": 14682.0,
+      "facebookCtr": 5.46,
+      "facebookCpc": 0.66,
+      "facebookCpm": 35.99,
+      "facebookRoas": 3.11,
+      "facebookOrdersFloat": 196.0,
+      "facebookCpoFloat": 49.37
     }
   ],
   "Payouts": {
@@ -14588,9 +14672,9 @@
     "PerBrand": {
       "Nordik": {
         "SharePct": 70.0,
-        "NetProfit": 90305.03,
-        "Owed": 63213.52,
-        "DaysCounted": 107
+        "NetProfit": 99325.31,
+        "Owed": 69527.72,
+        "DaysCounted": 108
       },
       "Aera": {
         "SharePct": 50.0,
@@ -14599,9 +14683,9 @@
         "DaysCounted": 16
       }
     },
-    "TotalOwed": 63040.49,
+    "TotalOwed": 69354.69,
     "TotalPaid": 7818.0,
-    "Balance": 55222.49,
+    "Balance": 61536.69,
     "Payments": [
       {
         "Date": "2026-09-21",
