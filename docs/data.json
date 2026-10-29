@@ -13303,11 +13303,19 @@
       ]
     },
     "Nordik": {
-      "Balance": 41659.83,
+      "Balance": 40515.06,
       "Currency": "USD",
-      "NextPayoutDate": "2026-10-30",
-      "NextPayoutAmount": 5074.24,
+      "NextPayoutDate": "2026-10-31",
+      "NextPayoutAmount": 5216.85,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116226195593",
+          "Brand": "Nordik",
+          "Date": "2026-10-31",
+          "Status": "SCHEDULED",
+          "Amount": 5216.85,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116177043593",
           "Brand": "Nordik",
@@ -13317,10 +13325,18 @@
           "Currency": "USD"
         },
         {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116189167753",
+          "Brand": "Nordik",
+          "Date": "2026-10-30",
+          "Status": "SCHEDULED",
+          "Amount": 32071.99,
+          "Currency": "USD"
+        },
+        {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116128186505",
           "Brand": "Nordik",
           "Date": "2026-10-29",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 3343.24,
           "Currency": "USD"
         },
@@ -13328,7 +13344,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116147781769",
           "Brand": "Nordik",
           "Date": "2026-10-29",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 24095.69,
           "Currency": "USD"
         },
@@ -13998,11 +14014,19 @@
       "Payouts": []
     },
     "Blended": {
-      "Balance": 43066.42,
+      "Balance": 41921.65,
       "Currency": "CAD",
       "NextPayoutDate": "2026-09-08",
-      "NextPayoutAmount": 5267.34,
+      "NextPayoutAmount": 5409.95,
       "Payouts": [
+        {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116226195593",
+          "Brand": "Nordik",
+          "Date": "2026-10-31",
+          "Status": "SCHEDULED",
+          "Amount": 5216.85,
+          "Currency": "USD"
+        },
         {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116177043593",
           "Brand": "Nordik",
@@ -14012,10 +14036,18 @@
           "Currency": "USD"
         },
         {
+          "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116189167753",
+          "Brand": "Nordik",
+          "Date": "2026-10-30",
+          "Status": "SCHEDULED",
+          "Amount": 32071.99,
+          "Currency": "USD"
+        },
+        {
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116128186505",
           "Brand": "Nordik",
           "Date": "2026-10-29",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 3343.24,
           "Currency": "USD"
         },
@@ -14023,7 +14055,7 @@
           "PayoutId": "gid://shopify/ShopifyPaymentsPayout/116147781769",
           "Brand": "Nordik",
           "Date": "2026-10-29",
-          "Status": "SCHEDULED",
+          "Status": "PAID",
           "Amount": 24095.69,
           "Currency": "USD"
         },
